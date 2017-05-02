@@ -7,12 +7,15 @@
             var authService = this;
 
             authService.login = function (credentials) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
-                    params: {
-                        metafield_key: ['username', 'password'],
-                        metafield_value: [credentials.username, credentials.password]
-                    }
-                });
+
+                // , {
+                //     params: {
+                //         metafield_key: ['username', 'password'],
+                //             metafield_value: [credentials.username, credentials.password]
+                //     }
+                // }
+                
+                return $http.get(URL + BUCKET_SLUG + '/object/' + credentials.username);
             };
 
             authService.register = function (credentials) {

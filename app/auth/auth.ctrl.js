@@ -17,23 +17,23 @@
 
         function userLogin(credentials) {
             function success(response) {
-                AuthService.setCredentials(
-                    response.data.data
-                );
-
-                crAcl.setRole();
-
-                switch (crAcl.getRole()) {
-                    case 'ROLE_USER':
-                        $state.go('main');
-                        break;
-                }
+                // AuthService.setCredentials(
+                //     response.data.data
+                // );
+                //
+                // crAcl.setRole();
+                //
+                // switch (crAcl.getRole()) {
+                //     case 'ROLE_USER':
+                //         $state.go('main');
+                //         break;
+                // }
 
                 $log.info(response);
             }
 
             function failed(response) {
-                Flash.create('danger', response.data.message);
+                Flash.create('danger', response.data);
                 $log.error(response);
             }
 
