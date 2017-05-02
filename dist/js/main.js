@@ -105,23 +105,23 @@
 
         function userLogin(credentials) {
             function success(response) {
-                AuthService.setCredentials(
-                    response.data.data
-                );
+                // AuthService.setCredentials(
+                //     response.data.data
+                // );
+                //
+                // crAcl.setRole();
+                //
+                // switch (crAcl.getRole()) {
+                //     case 'ROLE_USER':
+                //         $state.go('main');
+                //         break;
+                // }
 
-                crAcl.setRole();
-
-                switch (crAcl.getRole()) {
-                    case 'ROLE_USER':
-                        $state.go('main');
-                        break;
-                }
-
-                $log.info(response);
+                $log.info(response); 
             }
 
             function failed(response) {
-                Flash.create('danger', response.data.message);
+                Flash.create('danger', response.data);
                 $log.error(response);
             }
 
@@ -158,12 +158,15 @@
             var authService = this;
 
             authService.login = function (credentials) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
-                    params: {
-                        metafield_key: ['username', 'password'],
-                        metafield_value: [credentials.username, credentials.password]
-                    }
-                });
+
+                // , {
+                //     params: {
+                //         metafield_key: ['username', 'password'],
+                //             metafield_value: [credentials.username, credentials.password]
+                //     }
+                // }
+                
+                return $http.get(URL + BUCKET_SLUG + '/object/' + credentials.username);
             };
 
             authService.register = function (credentials) {

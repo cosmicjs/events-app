@@ -29,7 +29,7 @@
                 //         break;
                 // }
 
-                $log.info(response);
+                $log.info(response); 
             }
 
             function failed(response) {
