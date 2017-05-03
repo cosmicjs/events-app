@@ -1,0 +1,15 @@
+<div class="row events-list" ng-init="vm.getEvents(global.currentUser.username)">
+    <div class="col-lg-3 col-md-4 col-xs-6 thumb"
+         ng-repeat="event in vm.events">
+        <a class="thumbnail text-center" ui-sref="main.event.profile({slug: event.slug})">
+            <img class="img-responsive" ng-src="{{event.metadata.image.url}}" alt="">
+            <h4>
+                {{event.metadata.title}}
+                <span ng-switch="event.metadata.type">
+                    <span ng-switch-when="Social" class="badge bg-warning">social</span>
+                    <span ng-switch-when="Fun" class="badge bg-green">fun</span>
+                </span>
+            </h4>
+        </a>
+    </div>
+</div>

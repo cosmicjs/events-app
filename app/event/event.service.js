@@ -3,7 +3,7 @@
 
     angular
         .module('main')
-        .service('AuthService', function ($http, 
+        .service('EventService', function ($http,
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 
@@ -11,22 +11,19 @@
             var authService = this;
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            authService.checkUsername = function (credentials) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
+            authService.getEvents = function (username) {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
                     params: {
-                        metafield_key: 'username',
-                        metafield_value_has: credentials.username,
-                        limit: 1,
+                        metafield_key: 'user',
+                        metafield_object_slug: username,
+                        limit: 10,
                         read_key: READ_KEY
                     }
                 });
             };
-            authService.checkPassword = function (credentials) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
+            authService.getEventById = function (slug) {
+                return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
                     params: {
-                        metafield_key: 'password',
-                        metafield_value: credentials.password,
-                        limit: 1,
                         read_key: READ_KEY
                     }
                 });
@@ -81,25 +78,5 @@
                     write_key: WRITE_KEY
                 });
             };
-            authService.setCredentials = function (user) {
-                $rootScope.globals = {
-                    currentUser: user
-                };
-                
-                $cookieStore.put('globals', $rootScope.globals);
-            };
-            authService.clearCredentials = function () {
-                var deferred = $q.defer();
-                $cookieStore.remove('globals');
-
-                if (!$cookieStore.get('globals')) {
-                    $rootScope.globals = {};
-                    deferred.resolve('Credentials clear success');
-                } else {
-                    deferred.reject('Can\'t clear credentials');
-                }
-
-                return deferred.promise;
-            };
-        });  
+        });
 })();  

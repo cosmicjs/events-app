@@ -1,0 +1,34 @@
+<header class="business-header"
+        ng-init="vm.getEvent()">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-8">
+                <div class="business-header" style="background: url({{vm.event.metadata.image.url}})">
+                    <div class="tagline">
+                        <span class="title pull-left">{{vm.event.metadata.title}}</span>
+                        <span class="pull-right" ng-switch="vm.event.metadata.type">
+                            <span ng-switch-when="Social" class="badge bg-warning">social</span>
+                            <span ng-switch-when="Fun" class="badge bg-green">fun</span>
+                        </span>
+                    </div>
+                    <div class="tagline-bottom">
+                        <span class="badge bg-red pull-left">Begin | {{vm.event.metadata.date_begin}}</span>
+                        <span class="badge bg-blue pull-right">End | {{vm.event.metadata.date_end}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Page Content -->
+
+<div class="container">
+    <div class="row">
+        <br>
+        <div class="col-sm-offset-2 col-sm-8" ng-bind-html="vm.event.content"></div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+<!-- /.row -->
+
+

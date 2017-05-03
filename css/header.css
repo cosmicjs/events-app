@@ -1,0 +1,13 @@
+.navbar .dropdown a.dropdown-toggle {
+    padding: 10px 10px;
+}
+
+.navbar .dropdown .dropdown-toggle img {
+    padding: 0 5px;
+    border-radius: 100%;
+    width: 40px;
+}
+
+.create-event {
+    margin-right: 10px;
+}

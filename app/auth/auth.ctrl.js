@@ -6,56 +6,79 @@
         .controller('AuthCtrl', AuthCtrl);
 
     function AuthCtrl(crAcl, $state, AuthService, Flash, $log) {
-        var vm = this;
+        var vm = this;              
 
         vm.login = login;
         vm.register = register;
+        
+        vm.showRegisterForm = false;
+        
+        vm.loginForm = null;
+        vm.registerForm = null;
+        
+        vm.credentials = {};
+        vm.user = {};
 
         function login(credentials) {
-            userLogin(credentials);
-        } 
-
-        function userLogin(credentials) {
             function success(response) {
-                // AuthService.setCredentials(
-                //     response.data.data
-                // );
-                //
-                // crAcl.setRole();
-                //
-                // switch (crAcl.getRole()) {
-                //     case 'ROLE_USER':
-                //         $state.go('main');
-                //         break;
-                // }
+                function success(response) {
+                    if (response.data.status !== 'empty') {
+                        var currentUser = response.data.objects[0];
 
-                $log.info(response); 
+                        crAcl.setRole(currentUser.metadata.role);
+                        AuthService.setCredentials(currentUser);
+                        $state.go('main.event');
+                    }
+                    else
+                        Flash.create('danger', 'Incorrect username or password');
+                }
+
+                function failed(response) {
+                    $log.error(response);
+                }
+
+                if (response.data.status !== 'empty')
+                    AuthService
+                        .checkPassword(credentials)
+                        .then(success, failed);
+                else
+                    Flash.create('danger', 'Incorrect username or password');
+
+                $log.info(response);
             }
 
             function failed(response) {
-                Flash.create('danger', response.data);
                 $log.error(response);
             }
 
-            AuthService
-                .login(credentials)
-                .then(success, failed);
+            if (vm.loginForm.$valid)
+                AuthService
+                    .checkUsername(credentials)
+                    .then(success, failed);
         }
 
         function register(credentials) {
             function success(response) {
                 $log.info(response);
 
-                login(credentials);
+                var currentUser = response.data.object.metafields;
+
+                Flash.create('success', 'You have successfully signed up!');
+                vm.credentials = {
+                    username: currentUser[0].value,
+                    password: currentUser[3].value
+                };
+                vm.showRegisterForm = false;
             }
 
             function failed(response) {
                 $log.error(response);
             }
 
-            AuthService
-                .register(credentials)
-                .then(success, failed);
+            if (vm.registerForm.$valid)
+                AuthService
+                    .register(credentials)
+                    .then(success, failed);
         }
 
     }

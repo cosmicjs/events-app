@@ -1,1 +1,5 @@
-.form-signin{max-width:330px;padding:15px;margin:15% auto;background:#eee;border-radius:5px}.form-signin input[type=email]{margin-bottom:-1px;border-bottom-right-radius:0;border-bottom-left-radius:0}.form-signin input[type=password]{margin-bottom:10px;border-top-left-radius:0;border-top-right-radius:0}.form-signin .form-control{position:relative;height:auto;box-sizing:border-box;padding:10px;font-size:16px}
+.bg-red{background-color:#d9534f!important}.bg-green{background-color:#5cb85c!important}.bg-blue{background-color:#337ab7!important}.bg-warning{background-color:#f0ad4e!important}
+.events-list{margin-top:30px}
+.form-signin{max-width:330px;margin:15% auto}.form-signin .form-control{position:relative;height:auto;box-sizing:border-box}
+body{padding-top:70px}.thumb{margin-bottom:30px}footer{margin:50px 0}.business-header{margin-top:-10px;height:400px;background-size:cover;-o-background-size:cover}.tagline{color:#fff;padding:15px}.tagline-bottom{position:absolute;bottom:0;right:15px;left:15px;padding:15px;background:rgba(0,0,0,.65)}.tagline .title{font-size:2.5em;text-shadow:0 0 10px #000}.img-center{margin:0 auto}
+.navbar .dropdown a.dropdown-toggle{padding:10px}.navbar .dropdown .dropdown-toggle img{padding:0 5px;border-radius:100%;width:40px}.create-event{margin-right:10px}

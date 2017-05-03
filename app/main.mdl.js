@@ -7,17 +7,19 @@
             'ui.bootstrap',
             'ngMask',
             'ngCookies',
-            // 'ngAnimate', 
+            'ngRoute',
             'ngDialog',
             'cr.acl',
             'ui-notification',
-            'ngFlash'
+            'ngFlash',
+            
+            'event'
         ])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', '$httpProvider'];
-    function config($stateProvider, $urlRouterProvider, $httpProvider) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -28,19 +30,20 @@
 
             switch (crAcl.getRole()) {
                 case 'ROLE_USER':
-                    state = 'main.events';
+                    state = 'main.event';
                     break;
             }
 
             if (state) $state.go(state);
-            else $location.path('/login');
+            else $location.path('/login'); 
         });
  
         $stateProvider
             .state('main', {
                 url: '/',
-                // abstract: true,
+                abstract: true,
                 templateUrl: '../views/main.html',
+                controller: 'UserCtrl as global',
                 data: {
                     is_granted: ['ROLE_USER']
                 }
@@ -61,8 +64,8 @@
     run.$inject = ['$rootScope', '$cookieStore', '$http', 'crAcl', 'AuthService'];
     function run($rootScope, $cookieStore, $http, crAcl, AuthService) {
 
-        // keep user logged in after page refresh
         $rootScope.globals = $cookieStore.get('globals') || {};
+        $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
         crAcl
             .setInheritanceRoles({
@@ -75,8 +78,8 @@
             .setRedirect('auth'); 
 
         if ($rootScope.globals.currentUser) {
-            $http.defaults.headers.common['Authorization'] = $rootScope.globals.currentUser.token;
-            crAcl.setRole($rootScope.globals.currentUser.role);
+            
+            crAcl.setRole($rootScope.globals.currentUser.metadata.role);
         }
         else {
             crAcl.setRole();
