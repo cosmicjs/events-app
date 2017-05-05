@@ -10,7 +10,7 @@
  
         $stateProvider
             .state('main.event.profile', {
-                url: '/:slug',
+                url: '/:slug', 
                 views: {
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',

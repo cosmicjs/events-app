@@ -28,6 +28,11 @@
                     }
                 });
             };
+            authService.updateEvent = function (event) {
+                event.write_key = WRITE_KEY;
+
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', event);
+            };
             authService.register = function (user) {
 
                 return $http.post(URL + BUCKET_SLUG + '/add-object', {

@@ -2,20 +2,39 @@
         ng-init="vm.getEvent()">
     <div class="container">
         <div class="row">
-            <div class="col-sm-offset-2 col-sm-8">
+            <div class="col-sm-2">
+                <input class="pull-left"
+                       type="hidden"
+                       uib-datepicker-popup=""
+                       ng-model="vm.event.metafields[2].value"
+                       ng-change="vm.updateEvent(vm.event)"
+                       is-open="vm.dateBeginPicker">
+            </div>
+            <div class="col-sm-8">
                 <div class="business-header" style="background: url({{vm.event.metadata.image.url}})">
                     <div class="tagline">
-                        <span class="title pull-left">{{vm.event.metadata.title}}</span>
-                        <span class="pull-right" ng-switch="vm.event.metadata.type">
-                            <span ng-switch-when="Social" class="badge bg-warning">social</span>
-                            <span ng-switch-when="Fun" class="badge bg-green">fun</span>
+                        <span class="title pull-left">
+                            <input type="text" ng-model="vm.event.title" ng-change="vm.updateEvent(vm.event)">
+                        </span>
+                        <span class="event-type pull-right" ng-switch="vm.event.metafields[4].value">
+                            <span ng-switch-when="Social" class="badge bg-warning" ng-click="vm.event.metafields[4].value = 'Fun'; vm.updateEvent(vm.event)">social <i class="fa fa-pencil"></i>
+</span>
+                            <span ng-switch-when="Fun" class="badge bg-green" ng-click="vm.event.metafields[4].value = 'Social'; vm.updateEvent(vm.event)">fun <i class="fa fa-pencil"></i>
+</span>
                         </span>
                     </div>
                     <div class="tagline-bottom">
-                        <span class="badge bg-red pull-left">Begin | {{vm.event.metadata.date_begin}}</span>
-                        <span class="badge bg-blue pull-right">End | {{vm.event.metadata.date_end}}</span>
+                        <span class="badge bg-red pull-left" ng-click="vm.dateBeginPicker = !vm.dateBeginPicker">Begin | {{vm.event.metafields[2].value | date}} <i class="fa fa-pencil"></i></span>
+                        <span class="badge bg-blue pull-right" ng-click="vm.dateEndPicker = !vm.dateEndPicker">End | {{vm.event.metafields[3].value | date}} <i class="fa fa-pencil"></i></span>
                     </div>
                 </div>
+            </div>
+            <div id="dateEndPicker" class="col-sm-2">
+                <input type="hidden"
+                       uib-datepicker-popup=""
+                       ng-model="vm.event.metafields[3].value"
+                       is-open="vm.dateEndPicker"
+                       ng-change="vm.updateEvent(vm.event)">
             </div>
         </div>
     </div>
@@ -25,8 +44,18 @@
 <div class="container">
     <div class="row">
         <br>
-        <div class="col-sm-offset-2 col-sm-8" ng-bind-html="vm.event.content"></div>
-        <div class="col-sm-2"></div>
+        <div ng-if="!vm.contentEditor" class="col-sm-offset-2 col-sm-8" ng-bind-html="vm.event.content" ng-click="vm.contentEditor = !vm.contentEditor"></div>
+        <div ng-if="vm.contentEditor" class="col-sm-offset-2 col-sm-8">
+            <div text-angular ng-model="vm.event.content"></div>
+            <br>
+            <div class="btn-group pull-right">
+                <button class="btn btn-default" ng-click="vm.contentEditor = false">Cancel</button>
+                <button class="btn btn-primary" ng-click="vm.updateEvent(vm.event); vm.contentEditor = false">Save</button>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <flash-message></flash-message>
+        </div>
     </div>
 </div>
 <!-- /.row -->

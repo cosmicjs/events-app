@@ -12,6 +12,7 @@
             'cr.acl',
             'ui-notification',
             'ngFlash',
+            'textAngular',
             
             'event'
         ])
