@@ -5,18 +5,27 @@
         .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
-    function EventProfileCtrl($timeout, $stateParams, EventService, Notification, $log, Flash) {
+    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, WRITE_KEY, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvent = getEvent;
         vm.updateEvent = updateEvent;
-        
+        vm.cancelUpload = cancelUpload;
+        vm.upload = upload;
+
         vm.dateBeginPicker = false;
         vm.dateEndPicker = false;
-
         vm.contentEditor = false;
+        vm.uploadProgress = 0;
         
         vm.event = {}; 
+        vm.flow = {};
+        vm.background = {};
+        
+        vm.flowConfig = {
+            target: MEDIA_URL, 
+            singleFile: true
+        };
 
         function getEvent() {
             function success(response) {
@@ -24,10 +33,14 @@
 
                 vm.event = response.data.object;
 
-                vm.event.metafields[2].value = new Date(response.data.object.metadata.date_begin);
-                vm.event.metafields[3].value = new Date(response.data.object.metadata.date_end);
+                vm.event.metafields[1].value = new Date(response.data.object.metadata.date_begin);
+                vm.event.metafields[2].value = new Date(response.data.object.metadata.date_end);
 
-                console.log(response.data.object);
+                vm.contentEditor = !vm.event.content;
+
+                vm.background = {
+                    'background-image': 'url(' + (vm.event.metafields[0].value ? vm.event.metafields[0].url : DEFAULT_EVENT_IMAGE) + ')'
+                };
 
                 // vm.event.content = $sce.trustAsHtml(response.data.object.content);
             }
@@ -61,6 +74,48 @@
             EventService
                 .updateEvent(event)
                 .then(success, failed);
+        }
+
+        function cancelUpload() {
+            vm.flow.cancel();
+            vm.background = {
+                'background-image': 'url(' + (vm.event.metafields[0].value ? vm.event.metafields[0].url : DEFAULT_EVENT_IMAGE) + ')'
+            };
+        }
+
+        $scope.$watch('vm.flow.files[0].file.name', function () {
+            if (!vm.flow.files[0]) {
+                return ;
+            }
+            var fileReader = new FileReader();
+            fileReader.readAsDataURL(vm.flow.files[0].file);
+            fileReader.onload = function (event) {
+                $scope.$apply(function () {
+                    vm.background = {
+                        'background-image': 'url(' + event.target.result + ')'
+                    };
+                });
+            };
+        });
+
+        function upload() {
+
+            EventService
+                .upload(vm.flow.files[0].file)
+                .then(function(response){
+
+                    vm.event.metafields[0].value = response.media.name;
+
+                    updateEvent(vm.event);
+                    vm.flow.cancel();
+                    vm.uploadProgress = 0;
+
+                }, function(){
+                    console.log('failed :(');
+                }, function(progress){
+                    vm.uploadProgress = progress;
+                });
+
         }
 
     }

@@ -19,7 +19,7 @@
     "cr-acl": "",
     "angular-chosen-localytics": "*",
     "bootstrap-chosen": "*",
-    "ng-flow": "2.7.x",
+    "ng-flow": "^2.7.4",
     "angular-mask": "*",
     "checklist-model": "0.9.0",
     "angular-ui-notification": "^0.2.0",

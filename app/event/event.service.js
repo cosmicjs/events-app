@@ -7,11 +7,11 @@
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 
-                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY) {
-            var authService = this;
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL_EVENTS) {
+            
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            authService.getEvents = function (username) {
+            this.getEvents = function (username) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
                     params: {
                         metafield_key: 'user',
@@ -21,67 +21,72 @@
                     }
                 });
             };
-            authService.getEventById = function (slug) {
+            this.getEventById = function (slug) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
                     params: {
                         read_key: READ_KEY
                     }
                 });
             };
-            authService.updateEvent = function (event) {
+            this.updateEvent = function (event) {
                 event.write_key = WRITE_KEY;
 
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', event);
             };
-            authService.register = function (user) {
-
-                return $http.post(URL + BUCKET_SLUG + '/add-object', {
-                    title: user.full_name,
-                    type_slug: 'users',
-                    slug: user.username,
-                    metafields: [
-                        {
-                            key: "username",
-                            type: "text",
-                            value: user.username
-                        },
-                        {
-                            key: "email",
-                            type: "text",
-                            value: user.email
-                        },
-                        {
-                            key: "full_name",
-                            type: "text",
-                            value: user.full_name 
-                        },
-                        {
-                            key: "password",
-                            type: "text",
-                            value: user.password
-                        },
-                        {
-                            key: "image",
-                            type: "file",
-                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
-                        },
-                        {
-                            key: "role",
-                            type: "radio-buttons",
-                            options: [
-                                {
-                                    value: "ROLE_USER"
-                                },
-                                {
-                                    value: "ROLE_SUPER_ADMIN"
-                                }
-                            ],
-                            value: "ROLE_USER"
-                        }
-                    ],
-
-                    write_key: WRITE_KEY
+            this.removeEvent = function (slug) {
+                return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
+                    data: {
+                        "write_key": WRITE_KEY
+                    }
                 });
             };
+            this.createEvent = function (event) {
+                event.write_key = WRITE_KEY;
+
+                var beginDate = new Date(event.metafields[1].value);
+                var endDate = new Date(event.metafields[2].value);
+
+                event.metafields[1].value = beginDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + beginDate.getDate();
+                event.metafields[2].value = endDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + endDate.getDate();
+
+                event.slug = event.title;
+                event.type_slug = 'events';
+
+                event.metafields[4] = {
+                    key: "user",
+                    type: "object",
+                    object_type: "users",
+                    value: $rootScope.globals.currentUser._id
+                };
+                return $http.post(URL + BUCKET_SLUG + '/add-object', event);
+            };
+            this.upload = function (file) {
+                var fd = new FormData(); 
+                fd.append('media', file);
+                fd.append('write_key', WRITE_KEY);
+
+                var defer = $q.defer();
+
+                var xhttp = new XMLHttpRequest();
+
+                xhttp.upload.addEventListener("progress",function (e) {
+                    defer.notify(parseInt(e.loaded * 100 / e.total));
+                });
+                xhttp.upload.addEventListener("error",function (e) {
+                    defer.reject(e);
+                });
+
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === 4) {
+                        defer.resolve(JSON.parse(xhttp.response)); //Outputs a DOMString by default
+                    }
+                };
+
+                xhttp.open("post", MEDIA_URL_EVENTS, true);
+
+                xhttp.send(fd);
+                
+                return defer.promise;
+            }
         });
 })();  

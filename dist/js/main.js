@@ -13,14 +13,33 @@
             'ui-notification',
             'ngFlash',
             'textAngular',
+            'flow',
             
             'event'
         ])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'flowFactoryProvider', 'WRITE_KEY'];
+    function config($stateProvider, $urlRouterProvider, flowFactoryProvider, WRITE_KEY) {
+
+
+
+        flowFactoryProvider.defaults = {
+            query: function(flowFile, flowchunk) {
+                // WRITE_KEY = $injector.get("WRITE_KEY");
+
+                // if (flowFile.myparams) {
+                //     return flowFile.myparams;
+                // }
+                //
+                var fd = new FormData();
+                fd.append('media', flowFile);
+                fd.append('write_key', WRITE_KEY);
+
+                return fd;
+            }
+        };
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -290,10 +309,11 @@
     app.constant('BUCKET_SLUG', 'events');
     app.constant('URL', 'https://api.cosmicjs.com/v1/');
     app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    app.constant('MEDIA_URL_USERs', 'https://api.cosmicjs.com/v1/events/media?folder=users');
+    app.constant('MEDIA_URL_USERS', 'https://api.cosmicjs.com/v1/events/media?folder=users');
     app.constant('MEDIA_URL_EVENTS', 'https://api.cosmicjs.com/v1/events/media?folder=events');
     app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
     app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
 
 })();
 
@@ -305,10 +325,12 @@
         .module('main')
         .controller('EventCtrl', EventCtrl);
 
-    function EventCtrl(crAcl, $state, EventService, Flash, $log) {
+    function EventCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
-        
+
         vm.getEvents = getEvents;
+        vm.removeEvent = removeEvent;
+        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
 
         function getEvents(username) {
             function success(response) {
@@ -325,6 +347,26 @@
                 .getEvents(username)
                 .then(success, failed);
         }
+
+        function removeEvent(slug) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.success('Deleted');
+            }
+
+            function failed(response) {
+                Notification.error(response.data.message);
+                
+                $log.error(response);
+            }
+
+
+
+            EventService
+                .removeEvent(slug)
+                .then(success, failed);
+        }
     }
 })();
 
@@ -333,7 +375,8 @@
     
     angular
         .module('event', [
-            'event.profile'
+            'event.profile',
+            'event.add'
         ])
         .config(config);
 
@@ -366,11 +409,11 @@
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 
-                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY) {
-            var authService = this;
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL_EVENTS) {
+            
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            authService.getEvents = function (username) {
+            this.getEvents = function (username) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
                     params: {
                         metafield_key: 'user',
@@ -380,68 +423,73 @@
                     }
                 });
             };
-            authService.getEventById = function (slug) {
+            this.getEventById = function (slug) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
                     params: {
                         read_key: READ_KEY
                     }
                 });
             };
-            authService.updateEvent = function (event) {
+            this.updateEvent = function (event) {
                 event.write_key = WRITE_KEY;
 
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', event);
             };
-            authService.register = function (user) {
-
-                return $http.post(URL + BUCKET_SLUG + '/add-object', {
-                    title: user.full_name,
-                    type_slug: 'users',
-                    slug: user.username,
-                    metafields: [
-                        {
-                            key: "username",
-                            type: "text",
-                            value: user.username
-                        },
-                        {
-                            key: "email",
-                            type: "text",
-                            value: user.email
-                        },
-                        {
-                            key: "full_name",
-                            type: "text",
-                            value: user.full_name 
-                        },
-                        {
-                            key: "password",
-                            type: "text",
-                            value: user.password
-                        },
-                        {
-                            key: "image",
-                            type: "file",
-                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
-                        },
-                        {
-                            key: "role",
-                            type: "radio-buttons",
-                            options: [
-                                {
-                                    value: "ROLE_USER"
-                                },
-                                {
-                                    value: "ROLE_SUPER_ADMIN"
-                                }
-                            ],
-                            value: "ROLE_USER"
-                        }
-                    ],
-
-                    write_key: WRITE_KEY
+            this.removeEvent = function (slug) {
+                return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
+                    data: {
+                        "write_key": WRITE_KEY
+                    }
                 });
             };
+            this.createEvent = function (event) {
+                event.write_key = WRITE_KEY;
+
+                var beginDate = new Date(event.metafields[1].value);
+                var endDate = new Date(event.metafields[2].value);
+
+                event.metafields[1].value = beginDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + beginDate.getDate();
+                event.metafields[2].value = endDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + endDate.getDate();
+
+                event.slug = event.title;
+                event.type_slug = 'events';
+
+                event.metafields[4] = {
+                    key: "user",
+                    type: "object",
+                    object_type: "users",
+                    value: $rootScope.globals.currentUser._id
+                };
+                return $http.post(URL + BUCKET_SLUG + '/add-object', event);
+            };
+            this.upload = function (file) {
+                var fd = new FormData(); 
+                fd.append('media', file);
+                fd.append('write_key', WRITE_KEY);
+
+                var defer = $q.defer();
+
+                var xhttp = new XMLHttpRequest();
+
+                xhttp.upload.addEventListener("progress",function (e) {
+                    defer.notify(parseInt(e.loaded * 100 / e.total));
+                });
+                xhttp.upload.addEventListener("error",function (e) {
+                    defer.reject(e);
+                });
+
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === 4) {
+                        defer.resolve(JSON.parse(xhttp.response)); //Outputs a DOMString by default
+                    }
+                };
+
+                xhttp.open("post", MEDIA_URL_EVENTS, true);
+
+                xhttp.send(fd);
+                
+                return defer.promise;
+            }
         });
 })();  
 (function () {
@@ -451,7 +499,7 @@
         .module('main')
         .controller('UserCtrl', UserCtrl);
 
-    function UserCtrl($rootScope, crAcl, $state, AuthService, Flash, $log) {
+    function UserCtrl($rootScope, $scope, $state, AuthService, Flash, $log) {
         var vm = this;
         
         vm.currentUser = $rootScope.globals.currentUser.metadata;
@@ -473,6 +521,8 @@
                 .clearCredentials()
                 .then(success, failed);
         }
+
+        $scope.state = $state;
 
     }
 })();
@@ -505,20 +555,212 @@
 
     angular
         .module('main')
+        .controller('EventAddCtrl', EventAddCtrl);
+
+    function EventAddCtrl(EventService, Notification, $state, $log, $scope, MEDIA_URL, DEFAULT_EVENT_IMAGE, $timeout) {
+        var vm = this;
+
+        vm.createEvent = createEvent;
+        vm.cancelUpload = cancelUpload;
+        vm.upload = upload;
+
+        vm.dateBeginPicker = false;
+        vm.dateEndPicker = false;
+        vm.contentEditor = true;
+        vm.uploadProgress = 0;
+
+        vm.event = {
+            title: null,
+            slug: null,
+            content: null,
+            metafields: [
+                {
+                    key: "image",
+                    type: "file",
+                    value: null
+                },
+                {
+                    key: "date_begin",
+                    type: "date",
+                    value: null
+                },
+                {
+                    key: "date_end",
+                    type: "date",
+                    value: null
+                },
+                {
+                    key: "type",
+                    type: "select-dropdown",
+                    options: [
+                        {
+                            key: "social",
+                            value: "Social"
+                        },
+                        {
+                            key: "fun",
+                            value: "Fun"
+                        }
+                    ],
+                    value: "Social"
+                }
+            ]
+        };
+
+        $timeout(function() {
+            vm.event.metafields[1].value = new Date();
+            vm.event.metafields[2].value = new Date();
+        }, 100);
+
+        vm.flow = {};
+        vm.background = {
+            'background-image': 'url(' + DEFAULT_EVENT_IMAGE + ')'
+        };
+        
+        vm.flowConfig = {
+            target: MEDIA_URL, 
+            singleFile: true
+        };
+
+        function createEvent() {
+            if (vm.flow.files[0])
+                upload();
+            else
+                _createEvent(vm.event);
+        }
+        
+        function _createEvent(event) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.success(
+                    {
+                        message: 'Created',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+
+                $state.go('main.event');
+            }
+
+            function failed(response) {
+                Notification.error(
+                    {
+                        message: response.data.error,
+                        delay: 4000,
+                        replaceMessage: true
+                    }
+                );
+
+                $log.error(response);
+            }
+
+            EventService
+                .createEvent(event)
+                .then(success, failed);
+        }
+
+        function cancelUpload() {
+            vm.flow.cancel();
+            vm.background = {
+                'background-image': 'url(' + DEFAULT_EVENT_IMAGE.url + ')'
+            };
+        }
+
+        $scope.$watch('vm.flow.files[0].file.name', function () {
+            if (!vm.flow.files[0]) {
+                return ;
+            }
+            var fileReader = new FileReader();
+            fileReader.readAsDataURL(vm.flow.files[0].file);
+            fileReader.onload = function (event) {
+                $scope.$apply(function () {
+                    vm.background = {
+                        'background-image': 'url(' + event.target.result + ')'
+                    };
+                });
+            };
+        });
+
+        function upload() {
+            EventService
+                .upload(vm.flow.files[0].file)
+                .then(function(response){
+
+                    vm.event.metafields[0].value = response.media.name;
+
+                    createEvent(vm.event);
+
+                    vm.flow.cancel();
+                    vm.uploadProgress = 0;
+
+                }, function(){
+                    console.log('failed :(');
+                }, function(progress){
+                    vm.uploadProgress = progress;
+                });
+
+        }
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('event.add', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider 
+            .state('main.event.add', {
+                url: '/add', 
+                views: {
+                    '@main': {
+                        templateUrl: '../views/event/event.profile.html',
+                        controller: 'EventAddCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
-    function EventProfileCtrl($timeout, $stateParams, EventService, Notification, $log, Flash) {
+    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, WRITE_KEY, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvent = getEvent;
         vm.updateEvent = updateEvent;
-        
+        vm.cancelUpload = cancelUpload;
+        vm.upload = upload;
+
         vm.dateBeginPicker = false;
         vm.dateEndPicker = false;
-
         vm.contentEditor = false;
+        vm.uploadProgress = 0;
         
         vm.event = {}; 
+        vm.flow = {};
+        vm.background = {};
+        
+        vm.flowConfig = {
+            target: MEDIA_URL, 
+            singleFile: true
+        };
 
         function getEvent() {
             function success(response) {
@@ -526,10 +768,14 @@
 
                 vm.event = response.data.object;
 
-                vm.event.metafields[2].value = new Date(response.data.object.metadata.date_begin);
-                vm.event.metafields[3].value = new Date(response.data.object.metadata.date_end);
+                vm.event.metafields[1].value = new Date(response.data.object.metadata.date_begin);
+                vm.event.metafields[2].value = new Date(response.data.object.metadata.date_end);
 
-                console.log(response.data.object);
+                vm.contentEditor = !vm.event.content;
+
+                vm.background = {
+                    'background-image': 'url(' + (vm.event.metafields[0].value ? vm.event.metafields[0].url : DEFAULT_EVENT_IMAGE) + ')'
+                };
 
                 // vm.event.content = $sce.trustAsHtml(response.data.object.content);
             }
@@ -565,6 +811,48 @@
                 .then(success, failed);
         }
 
+        function cancelUpload() {
+            vm.flow.cancel();
+            vm.background = {
+                'background-image': 'url(' + (vm.event.metafields[0].value ? vm.event.metafields[0].url : DEFAULT_EVENT_IMAGE) + ')'
+            };
+        }
+
+        $scope.$watch('vm.flow.files[0].file.name', function () {
+            if (!vm.flow.files[0]) {
+                return ;
+            }
+            var fileReader = new FileReader();
+            fileReader.readAsDataURL(vm.flow.files[0].file);
+            fileReader.onload = function (event) {
+                $scope.$apply(function () {
+                    vm.background = {
+                        'background-image': 'url(' + event.target.result + ')'
+                    };
+                });
+            };
+        });
+
+        function upload() {
+
+            EventService
+                .upload(vm.flow.files[0].file)
+                .then(function(response){
+
+                    vm.event.metafields[0].value = response.media.name;
+
+                    updateEvent(vm.event);
+                    vm.flow.cancel();
+                    vm.uploadProgress = 0;
+
+                }, function(){
+                    console.log('failed :(');
+                }, function(progress){
+                    vm.uploadProgress = progress;
+                });
+
+        }
+
     }
 })();
 
@@ -580,7 +868,7 @@
  
         $stateProvider
             .state('main.event.profile', {
-                url: '/:slug', 
+                url: '/slugs/:slug',
                 views: {
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',

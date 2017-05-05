@@ -3,7 +3,8 @@
     
     angular
         .module('event', [
-            'event.profile'
+            'event.profile',
+            'event.add'
         ])
         .config(config);
 

@@ -5,7 +5,7 @@
         .module('main')
         .controller('UserCtrl', UserCtrl);
 
-    function UserCtrl($rootScope, crAcl, $state, AuthService, Flash, $log) {
+    function UserCtrl($rootScope, $scope, $state, AuthService, Flash, $log) {
         var vm = this;
         
         vm.currentUser = $rootScope.globals.currentUser.metadata;
@@ -27,6 +27,8 @@
                 .clearCredentials()
                 .then(success, failed);
         }
+
+        $scope.state = $state;
 
     }
 })();

@@ -2,19 +2,19 @@
     'use strict';
     
     angular
-        .module('event.profile', [])
+        .module('event.add', [])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];
     function config($stateProvider, $urlRouterProvider) {
  
-        $stateProvider
-            .state('main.event.profile', {
-                url: '/slugs/:slug',
+        $stateProvider 
+            .state('main.event.add', {
+                url: '/add', 
                 views: {
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',
-                        controller: 'EventProfileCtrl as vm'
+                        controller: 'EventAddCtrl as vm'
                     }
                 },
                 data: {

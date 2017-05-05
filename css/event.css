@@ -22,4 +22,115 @@
 
 .event-type {
     cursor: pointer;
+    z-index: 5;
+}
+
+.event-overlay {
+    background: transparent;
+    top: -15px;
+    left: 15px;
+    bottom: 0;
+    right: 15px;
+    position: absolute;
+    transition: .2s;
+}
+
+.event-image:hover > .event-overlay {
+    background-color: rgba(0, 0, 0, 0.65);
+    transition: .2s;
+}
+
+.event-image:hover > .event-overlay .tagline-bottom {
+    background: transparent !important;
+    transition: .2s;
+}
+
+.business-header {
+    margin-top: -10px;
+    height: 400px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    opacity: 1;
+    transition: .2s;
+}
+
+.tagline {
+    color: #fff;
+    padding: 15px;
+    z-index: 5;
+}
+
+.tagline-bottom {
+    transition: .2s;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.tagline .title {
+    font-size: 2.5em;
+    text-shadow: 0 0 10px #000;
+    z-index: 5;
+}
+
+.img-center {
+    margin: 0 auto;
+}
+
+#dateEndPicker ul.uib-datepicker-popup.dropdown-menu {
+    left: -100px !important;
+}
+
+.event-change-image {
+    text-align: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-top: 150px;
+    display: none;
+    transition: .2s;
+}
+
+.event-change-image .title{
+    color: #fff;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.event-image:hover > .event-overlay .event-change-image {
+    display: block;
+    transition: .2s;
+}
+
+.event-progress {
+    border-radius: 0;
+    background: transparent;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.event-remove {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    padding: 5px 6px;
+    transition: .2s;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.event-thumb:hover > .event-remove {
+    transition: .2s;
+    opacity: 1;
+}
+
+.event-thumb .thumbnail .img-container{
+    height: 130px;
+    overflow: hidden;
 }
