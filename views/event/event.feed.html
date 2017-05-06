@@ -8,6 +8,7 @@
         </a>
         <div class=" thumb event-thumb">
             <span class="badge bg-red event-remove"
+                  ng-if="state.is('main.event')"
                   uib-tooltip="Remove"
                   ng-click="vm.removeEvent(event.slug);">
                 <i class="fa fa-remove"></i>
