@@ -11,7 +11,15 @@
             
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            this.getEvents = function (username) {
+            this.getEvents = function () {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/events', {
+                    params: {
+                        limit: 10,
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.getEventsByUsername = function (username) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
                     params: {
                         metafield_key: 'user',

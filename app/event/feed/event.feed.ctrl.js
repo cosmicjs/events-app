@@ -3,16 +3,16 @@
 
     angular
         .module('main')
-        .controller('EventCtrl', EventCtrl);
+        .controller('EventFeedCtrl', EventFeedCtrl);
 
-    function EventCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventFeedCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
         vm.removeEvent = removeEvent;
         vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
 
-        function getEvents(username) {
+        function getEvents() {
             function success(response) {
                 $log.info(response);
 
@@ -22,10 +22,9 @@
             function failed(response) {
                 $log.error(response);
             }
-            console.log(username);
 
             EventService
-                .getEventsByUsername(username)
+                .getEvents()
                 .then(success, failed);
         }
 

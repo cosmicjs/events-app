@@ -125,12 +125,22 @@
     cursor: pointer;
 }
 
-.event-thumb:hover > .event-remove {
+.event-thumb:hover > .event-remove, .event-thumb-sm:hover > .event-remove  {
     transition: .2s;
     opacity: 1;
 }
 
-.event-thumb .thumbnail .img-container{
+.event-thumb .thumbnail .img-container {
     height: 130px;
     overflow: hidden;
+}
+
+.event-thumb-sm .thumbnail .img-container {
+    height: 70px;
+    overflow: hidden;
+}
+
+.event-title {
+    width: 80%;
+    margin-left: 15%;
 }

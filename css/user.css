@@ -1,0 +1,70 @@
+.user-overlay-upload-image {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    bottom: 35px;
+    top: 15px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.65);
+    transition: .2s;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.user-overlay-upload-image .fa {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 40%;
+    text-align: center;
+    z-index: 4;
+    color: #fff;
+}
+
+.user-avatar:hover > .user-overlay-upload-image {
+    transition: .2s;
+    opacity: 1;
+}
+
+.user-event-avatar {
+    position: absolute;
+    width: 60px;
+    border: 4px solid #fff;
+    /* top: -10px; */
+    left: 35px;
+    bottom: 43px;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    /*min-height: 130px;*/
+    width: auto;
+}
+
+.user-overlay-upload-image .cancel {
+    position: absolute;
+    text-align: right;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    float: right;
+}
+
+.user-avatar-progress {
+    height: 10px;
+    border-radius: 0;
+     background: 0 0;
+    /* margin-top: -10px; */
+    z-index: 35;
+    position: absolute;
+    bottom: 16px;
+    /* width: 100%; */
+    left: 31px;
+    right: 31px;
+}
+
+.user-avatar-progress .progress-bar {
+    /*background: #fff;*/
+}

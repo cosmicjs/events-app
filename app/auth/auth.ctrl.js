@@ -27,7 +27,7 @@
 
                         crAcl.setRole(currentUser.metadata.role);
                         AuthService.setCredentials(currentUser);
-                        $state.go('main.event');
+                        $state.go('main.event.feed');
                     }
                     else
                         Flash.create('danger', 'Incorrect username or password');

@@ -2,23 +2,19 @@
     'use strict';
     
     angular
-        .module('event', [
-            'event.profile',
-            'event.feed',
-            'event.add'
-        ])
+        .module('event.feed', [])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];
     function config($stateProvider, $urlRouterProvider) {
  
         $stateProvider
-            .state('main.event', {
-                url: 'events',
+            .state('main.event.feed', {
+                url: '/feed',
                 views: {
-                    '': {
-                        templateUrl: '../views/event/events.html',
-                        controller: 'EventCtrl as vm'
+                    '@main': {
+                        templateUrl: '../views/event/event.feed.html',
+                        controller: 'EventFeedCtrl as vm'
                     }
                 },
                 data: {

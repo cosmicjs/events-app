@@ -10,7 +10,7 @@
             <ul class="nav navbar-nav navbar-right pull-right">
                 <li>
                     <button class="btn btn-success btn-sm navbar-btn create-event" ui-sref="main.event.add">
-                        Add Event
+                        <i class="fa fa-plus-circle"></i> Add Event
                     </button>
                 </li>
                 <li class="dropdown pull-right">
@@ -23,8 +23,8 @@
                         <img ng-src="{{global.currentUser.image.url}}" alt="">
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Profile</a></li>
-                        <li><a ui-sref="main.event">Events</a></li>
+                        <li><a ui-sref="main.user.myProfile">My Profile</a></li>
+                        <li><a ui-sref="main.event">My Events</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="#">Settings</a></li>
                         <li role="separator" class="divider"></li>

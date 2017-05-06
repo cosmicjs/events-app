@@ -15,31 +15,14 @@
             'textAngular',
             'flow',
             
-            'event'
+            'event',
+            'user'
         ])
         .config(config)
         .run(run);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider', 'flowFactoryProvider', 'WRITE_KEY'];
     function config($stateProvider, $urlRouterProvider, flowFactoryProvider, WRITE_KEY) {
-
-
-
-        flowFactoryProvider.defaults = {
-            query: function(flowFile, flowchunk) {
-                // WRITE_KEY = $injector.get("WRITE_KEY");
-
-                // if (flowFile.myparams) {
-                //     return flowFile.myparams;
-                // }
-                //
-                var fd = new FormData();
-                fd.append('media', flowFile);
-                fd.append('write_key', WRITE_KEY);
-
-                return fd;
-            }
-        };
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -50,7 +33,7 @@
 
             switch (crAcl.getRole()) {
                 case 'ROLE_USER':
-                    state = 'main.event';
+                    state = 'main.event.feed';
                     break;
             }
 

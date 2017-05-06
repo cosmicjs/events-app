@@ -15,31 +15,14 @@
             'textAngular',
             'flow',
             
-            'event'
+            'event',
+            'user'
         ])
         .config(config)
         .run(run);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider', 'flowFactoryProvider', 'WRITE_KEY'];
     function config($stateProvider, $urlRouterProvider, flowFactoryProvider, WRITE_KEY) {
-
-
-
-        flowFactoryProvider.defaults = {
-            query: function(flowFile, flowchunk) {
-                // WRITE_KEY = $injector.get("WRITE_KEY");
-
-                // if (flowFile.myparams) {
-                //     return flowFile.myparams;
-                // }
-                //
-                var fd = new FormData();
-                fd.append('media', flowFile);
-                fd.append('write_key', WRITE_KEY);
-
-                return fd;
-            }
-        };
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -50,7 +33,7 @@
 
             switch (crAcl.getRole()) {
                 case 'ROLE_USER':
-                    state = 'main.event';
+                    state = 'main.event.feed';
                     break;
             }
 
@@ -138,7 +121,7 @@
 
                         crAcl.setRole(currentUser.metadata.role);
                         AuthService.setCredentials(currentUser);
-                        $state.go('main.event');
+                        $state.go('main.event.feed');
                     }
                     else
                         Flash.create('danger', 'Incorrect username or password');
@@ -342,9 +325,10 @@
             function failed(response) {
                 $log.error(response);
             }
+            console.log(username);
 
             EventService
-                .getEvents(username)
+                .getEventsByUsername(username)
                 .then(success, failed);
         }
 
@@ -376,6 +360,7 @@
     angular
         .module('event', [
             'event.profile',
+            'event.feed',
             'event.add'
         ])
         .config(config);
@@ -413,7 +398,15 @@
             
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            this.getEvents = function (username) {
+            this.getEvents = function () {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/events', {
+                    params: {
+                        limit: 10,
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.getEventsByUsername = function (username) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
                     params: {
                         metafield_key: 'user',
@@ -531,17 +524,18 @@
     'use strict';
     
     angular
-        .module('user', [])
+        .module('user', [
+            'user.profile'
+        ])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];
     function config($stateProvider, $urlRouterProvider) {
  
         $stateProvider
-            .state('user', {
-                url: '/user', 
-                // abstract: true,
-                templateUrl: '../views/main.html',
+            .state('main.user', {
+                url: 'user',
+                abstract: true,
                 data: {
                     is_granted: ['ROLE_USER']
                 }
@@ -550,6 +544,120 @@
     
 })();
  
+(function () {
+    'use strict';
+
+    angular
+        .module('main')
+        .service('UserService', function ($http, 
+                                          $cookieStore, 
+                                          $q, 
+                                          $rootScope, 
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY) {
+            $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+            this.getCurrentUser = function (credentials) {
+                return $http.get(URL + BUCKET_SLUG + '/object/' + $rootScope.globals.currentUser.slug, {
+                    params: {
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.getUser = function (slug) {
+                return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
+                    params: {
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.updateUser = function (user) {
+                user.write_key = WRITE_KEY;
+
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', user);
+            };
+            this.checkPassword = function (credentials) {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
+                    params: {
+                        metafield_key: 'password',
+                        metafield_value: credentials.password,
+                        limit: 1,
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.register = function (user) {
+
+                return $http.post(URL + BUCKET_SLUG + '/add-object', {
+                    title: user.full_name,
+                    type_slug: 'users',
+                    slug: user.username,
+                    metafields: [
+                        {
+                            key: "username",
+                            type: "text",
+                            value: user.username
+                        },
+                        {
+                            key: "email",
+                            type: "text",
+                            value: user.email
+                        },
+                        {
+                            key: "full_name",
+                            type: "text",
+                            value: user.full_name 
+                        },
+                        {
+                            key: "password",
+                            type: "text",
+                            value: user.password
+                        },
+                        {
+                            key: "image",
+                            type: "file",
+                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
+                        },
+                        {
+                            key: "role",
+                            type: "radio-buttons",
+                            options: [
+                                {
+                                    value: "ROLE_USER"
+                                },
+                                {
+                                    value: "ROLE_SUPER_ADMIN"
+                                }
+                            ],
+                            value: "ROLE_USER"
+                        }
+                    ],
+
+                    write_key: WRITE_KEY
+                });
+            };
+            this.setCredentials = function (user) {
+                $rootScope.globals = {
+                    currentUser: user
+                };
+                
+                $cookieStore.put('globals', $rootScope.globals);
+            };
+            this.clearCredentials = function () {
+                var deferred = $q.defer();
+                $cookieStore.remove('globals');
+
+                if (!$cookieStore.get('globals')) {
+                    $rootScope.globals = {};
+                    deferred.resolve('Credentials clear success');
+                } else {
+                    deferred.reject('Can\'t clear credentials');
+                }
+
+                return deferred.promise;
+            };
+
+        });  
+})();  
 (function () {
     'use strict'; 
 
@@ -738,6 +846,85 @@
 
     angular
         .module('main')
+        .controller('EventFeedCtrl', EventFeedCtrl);
+
+    function EventFeedCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+        var vm = this;
+
+        vm.getEvents = getEvents;
+        vm.removeEvent = removeEvent;
+        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
+
+        function getEvents() {
+            function success(response) {
+                $log.info(response);
+
+                vm.events = response.data.objects;
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            EventService
+                .getEvents()
+                .then(success, failed);
+        }
+
+        function removeEvent(slug) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.success('Deleted');
+            }
+
+            function failed(response) {
+                Notification.error(response.data.message);
+                
+                $log.error(response);
+            }
+
+
+
+            EventService
+                .removeEvent(slug)
+                .then(success, failed);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('event.feed', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.event.feed', {
+                url: '/feed',
+                views: {
+                    '@main': {
+                        templateUrl: '../views/event/event.feed.html',
+                        controller: 'EventFeedCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
     function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, WRITE_KEY, DEFAULT_EVENT_IMAGE) {
@@ -873,6 +1060,167 @@
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',
                         controller: 'EventProfileCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('UserProfileCtrl', UserProfileCtrl);
+
+    function UserProfileCtrl(UserService, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $state, $timeout, DEFAULT_EVENT_IMAGE) {
+        var vm = this;
+
+        vm.getUser = getUser;
+        vm.updateUser = updateUser;
+        vm.cancelUpload = cancelUpload;
+        vm.upload = upload;
+
+        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
+
+        vm.user = {}; 
+        vm.flow = {};
+
+        vm.uploadProgress = 0;
+
+        vm.flowConfig = {
+            target: MEDIA_URL, 
+            singleFile: true
+        };
+        
+        vm.avatar = null;
+
+        function getUser() {
+            function success(response) {
+                $log.info(response);
+
+                vm.user = response.data.object;
+
+                vm.avatar = response.data.object.metadata.image.url;
+
+                $timeout(getEvents(vm.user.metadata.username), 200);
+
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            if ($state.is('main.user.myProfile'))
+                UserService
+                    .getCurrentUser()
+                    .then(success, failed);
+            else
+                UserService
+                .getUser($stateParams.slug)
+                .then(success, failed);
+        }
+        
+        function updateUser(user) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.primary(
+                    {
+                        message: 'Saved',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            UserService
+                .updateUser(user)
+                .then(success, failed);
+        }
+
+        function getEvents(username) {
+            function success(response) {
+                $log.info(response);
+
+                vm.events = response.data.objects;
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+            console.log(username);
+
+            EventService
+                .getEventsByUsername(username)
+                .then(success, failed);
+        }
+
+        function cancelUpload() {
+            vm.flow.cancel();
+        }
+
+        function upload() {
+
+            EventService
+                .upload(vm.flow.files[0].file)
+                .then(function(response){
+
+                    vm.user.metafields[4].value = response.media.name;
+                    vm.avatar = response.media.url;
+                    
+                    updateUser(vm.user);
+                    vm.flow.cancel();
+                    vm.uploadProgress = 0;
+
+                }, function(){
+                    console.log('failed :(');
+                }, function(progress){
+                    vm.uploadProgress = progress;
+                });
+
+        }
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('user.profile', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.user.profile', {
+                url: '/profile/:slug',
+                views: {
+                    '@main': {
+                        templateUrl: '../views/user/user.profile.html',
+                        controller: 'UserProfileCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            })
+            .state('main.user.myProfile', {
+                url: '/my-profile',
+                views: {
+                    '@main': {
+                        templateUrl: '../views/user/user.profile.html',
+                        controller: 'UserProfileCtrl as vm'
                     }
                 },
                 data: {
