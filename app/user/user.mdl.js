@@ -3,7 +3,8 @@
     
     angular
         .module('user', [
-            'user.profile'
+            'user.profile',
+            'user.settings'
         ])
         .config(config);
 
