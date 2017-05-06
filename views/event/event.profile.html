@@ -40,7 +40,7 @@
                             <span class="badge bg-blue pull-right" ng-click="vm.dateEndPicker = !vm.dateEndPicker">End <span ng-show="vm.event.metafields[2].value">|</span> {{vm.event.metafields[2].value | date}} <i
                                     class="fa fa-pencil"></i></span>
                         </div>
-                        <div class="event-change-image">
+                        <div class="event-change-image" ng-show="globals.currentUser._id === vm.event.metadata.user._id">
                             <span ng-if="!vm.flow.files[0] || state.is('main.event.add')" class="title" flow-btn>Change image <i class="fa fa-pencil"></i></span>
                             <div class="btn-group" ng-if="vm.flow.files[0]" ng-show="state.is('main.event.profile')">
                                 <button class="btn btn-success btn-sm"
@@ -66,9 +66,9 @@
 <div class="container">
     <div class="row">
         <br>
-        <div ng-if="!vm.contentEditor" class="col-sm-offset-2 col-sm-8" ng-bind-html="vm.event.content"
-             ng-click="vm.contentEditor = !vm.contentEditor"></div>
-        <div ng-if="vm.contentEditor" class="col-sm-offset-2 col-sm-8">
+        <div ng-if="!vm.contentEditor" class="col-sm-offset-2 col-sm-7" ng-bind-html="vm.event.content"
+             ng-click="vm.contentEditor = !vm.contentEditor && globals.currentUser._id === vm.event.metadata.user._id"></div>
+        <div ng-if="vm.contentEditor" class="col-sm-offset-2 col-sm-7">
             <div text-angular ng-model="vm.event.content"></div>
             <br>
             <div class="btn-group pull-right" ng-show="state.is('main.event.profile')">
@@ -82,8 +82,14 @@
                 </button>
             </div>
         </div>
-        <div class="col-sm-2">
-            <flash-message></flash-message>
+        <div class="col-sm-1">
+            <div class="event-user-profile text-center">
+                <a ui-sref="main.user.profile({slug: vm.event.metadata.user.slug})">
+                    <img ng-src="{{vm.event.metadata.user.metadata.image.url}}"
+                         class="img-circle img-responsive">
+                </a>
+                <a ui-sref="main.user.profile({slug: vm.event.metadata.user.slug})">{{vm.event.metadata.user.metadata.username}}</a>
+            </div>
         </div>
     </div>
 </div>

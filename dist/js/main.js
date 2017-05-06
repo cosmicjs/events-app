@@ -928,7 +928,7 @@
         .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
-    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, WRITE_KEY, DEFAULT_EVENT_IMAGE) {
+    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvent = getEvent;
@@ -994,9 +994,12 @@
                 $log.error(response);
             }
 
-            EventService
-                .updateEvent(event)
-                .then(success, failed);
+            if ($rootScope.globals.currentUser._id === event.metadata.user._id)
+                EventService
+                    .updateEvent(event)
+                    .then(success, failed);
+            else
+                Notification.warning("You can't update");
         }
 
         function cancelUpload() {
