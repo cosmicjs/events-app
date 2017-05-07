@@ -78,6 +78,10 @@
     z-index: 5;
 }
 
+.tagline .title input {
+    width: 100%;
+}
+
 .img-center {
     margin: 0 auto;
 }

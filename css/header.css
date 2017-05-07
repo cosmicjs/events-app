@@ -44,6 +44,7 @@
 
 #btn-add-event {
     position: fixed;
-    bottom: 0;
-    right: 10px;
+    bottom: 15px;
+    right: 15px;
+    box-shadow: 0 0 5px 0 #565656;
 }
