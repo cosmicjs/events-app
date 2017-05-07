@@ -11,3 +11,39 @@
 .create-event {
     margin-right: 10px;
 }
+
+.navbar-avatar {
+    width: 35px;
+    padding: 0;
+    border-radius: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    #nav-bar1 {
+        display: none;
+    }
+    #nav-bar2 {
+        display: block;
+    }
+    #btn-add-event {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #nav-bar1 {
+        display: block;
+    }
+    #nav-bar2 {
+        display: none;
+    }
+    #btn-add-event {
+        display: none;
+    }
+}
+
+#btn-add-event {
+    position: fixed;
+    bottom: 0;
+    right: 10px;
+}

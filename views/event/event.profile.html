@@ -66,9 +66,9 @@
 <div class="container">
     <div class="row">
         <br>
-        <div ng-if="!vm.contentEditor" class="col-sm-offset-2 col-sm-7" ng-bind-html="vm.event.content"
+        <div ng-if="!vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7" ng-bind-html="vm.event.content"
              ng-click="vm.contentEditor = !vm.contentEditor && globals.currentUser._id === vm.event.metadata.user._id"></div>
-        <div ng-if="vm.contentEditor" class="col-sm-offset-2 col-sm-7">
+        <div ng-if="vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7">
             <div text-angular ng-model="vm.event.content"></div>
             <br>
             <div class="btn-group pull-right" ng-show="state.is('main.event.profile')">
@@ -82,7 +82,7 @@
                 </button>
             </div>
         </div>
-        <div class="col-sm-1">
+        <div class="col-xs-offset-3 col-xs-6 col-sm-1">
             <div class="event-user-profile text-center">
                 <a ui-sref="main.user.profile({slug: vm.event.metadata.user.slug})">
                     <img ng-src="{{vm.event.metadata.user.metadata.image.url}}"

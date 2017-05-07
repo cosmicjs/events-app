@@ -14,7 +14,7 @@
             this.getEvents = function () {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/events', {
                     params: {
-                        limit: 10,
+                        limit: 100,
                         read_key: READ_KEY
                     }
                 });
