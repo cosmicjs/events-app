@@ -9,3 +9,16 @@ body {
 footer {
     margin: 50px 0;
 }
+
+.hidden {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.footer-logo img{
+    margin-right: 5px;
+}
+
+.footer-logo {
+    font-size: 0.8em;
+}

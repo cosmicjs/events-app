@@ -31,7 +31,8 @@
     "infinity-angular-chosen": "^0.2.0",
     "angular-flash-alert": "^2.4.0",
     "components-font-awesome": "^4.7.0",
-    "textAngular": "^1.5.16"
+    "textAngular": "^1.5.16",
+    "angular-loading-bar": "^0.9.0"
   },
   "resolutions": {
     "angular": "~1.4.x"

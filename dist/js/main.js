@@ -14,15 +14,17 @@
             'ngFlash',
             'textAngular',
             'flow',
-            
+            'angular-loading-bar',
+
             'event',
             'user'
         ])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', 'flowFactoryProvider', 'WRITE_KEY'];
-    function config($stateProvider, $urlRouterProvider, flowFactoryProvider, WRITE_KEY) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'WRITE_KEY'];
+    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, WRITE_KEY) {
+        cfpLoadingBarProvider.includeSpinner = false;
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -88,8 +90,23 @@
             crAcl.setRole();
         }
 
+
+        $rootScope
+            .$on('$stateChangeStart',
+                function(event, toState, toParams, fromState, fromParams){
+                    $("#ui-view").html("");
+                    $(".page-loading").removeClass("hidden");
+                });
+
+        $rootScope
+            .$on('$stateChangeSuccess',
+                function(event, toState, toParams, fromState, fromParams){
+                    $(".page-loading").addClass("hidden");
+                });
+
+
     }
-    
+
 })();
  
 (function () {
@@ -358,7 +375,7 @@
     'use strict';
     
     angular
-        .module('event', [
+        .module('event', [ 
             'event.profile',
             'event.feed',
             'event.add'
@@ -406,15 +423,18 @@
                     }
                 });
             };
-            this.getEventsByUsername = function (username) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
-                    params: {
-                        metafield_key: 'user',
-                        metafield_object_slug: username,
-                        limit: 10,
-                        read_key: READ_KEY
+            this.getEventsByUsername = function (username, ignoreLoadingBar) {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/events/search',
+                    {
+                        ignoreLoadingBar: ignoreLoadingBar,
+                        params: {
+                            metafield_key: 'user',
+                            metafield_object_slug: username,
+                            limit: 10,
+                            read_key: READ_KEY
+                        }
                     }
-                });
+                );
             };
             this.getEventById = function (slug) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
@@ -517,6 +537,19 @@
 
         $scope.state = $state;
 
+        // $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        //     // if (toState.resolve) {
+        //         console.log(false);
+        //     // }
+        // });
+        // $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+        //     // if (toState.resolve) {
+        //         // $scope.hideSpinner();
+        //         console.log(true);
+        //
+        //     // }
+        // });
+
     }
 })();
 
@@ -557,15 +590,17 @@
                                           URL, BUCKET_SLUG, READ_KEY, WRITE_KEY) {
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            this.getCurrentUser = function (credentials) {
+            this.getCurrentUser = function (ignoreLoadingBar) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + $rootScope.globals.currentUser.slug, {
+                    ignoreLoadingBar: ignoreLoadingBar,
                     params: {
                         read_key: READ_KEY
                     }
                 });
             };
-            this.getUser = function (slug) {
+            this.getUser = function (slug, ignoreLoadingBar) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
+                    ignoreLoadingBar: ignoreLoadingBar,
                     params: {
                         read_key: READ_KEY
                     }
@@ -849,7 +884,7 @@
         .module('main')
         .controller('EventFeedCtrl', EventFeedCtrl);
 
-    function EventFeedCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventFeedCtrl($rootScope, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -859,7 +894,6 @@
         function getEvents() {
             function success(response) {
                 $log.info(response);
-
                 vm.events = response.data.objects;
             }
 
@@ -1111,7 +1145,7 @@
 
                 vm.avatar = response.data.object.metadata.image.url;
 
-                $timeout(getEvents(vm.user.metadata.username), 200);
+                getEvents(vm.user.metadata.username);
 
             }
 
@@ -1125,8 +1159,8 @@
                     .then(success, failed);
             else
                 UserService
-                .getUser($stateParams.slug)
-                .then(success, failed);
+                    .getUser($stateParams.slug)
+                    .then(success, failed);
         }
         
         function updateUser(user) {
@@ -1164,7 +1198,7 @@
             console.log(username);
 
             EventService
-                .getEventsByUsername(username)
+                .getEventsByUsername(username, true)
                 .then(success, failed);
         }
 

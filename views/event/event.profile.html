@@ -66,23 +66,25 @@
 <div class="container">
     <div class="row">
         <br>
-        <div ng-if="!vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7" ng-bind-html="vm.event.content"
+        <div ng-if="!vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7 col-md-7" ng-bind-html="vm.event.content"
              ng-click="vm.contentEditor = !vm.contentEditor && globals.currentUser._id === vm.event.metadata.user._id"></div>
-        <div ng-if="vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7">
-            <div text-angular ng-model="vm.event.content"></div>
-            <br>
-            <div class="btn-group pull-right" ng-show="state.is('main.event.profile')">
-                <button class="btn btn-default" ng-click="vm.contentEditor = false">Cancel</button>
-                <button class="btn btn-primary" ng-click="vm.updateEvent(vm.event); vm.contentEditor = false">Save
-                </button>
-            </div>
-            <div class="btn-group pull-right" ng-show="state.is('main.event.add')">
-                <button class="btn btn-default" ui-sref="main.event">Cancel</button>
-                <button class="btn btn-primary" ng-click="vm.createEvent(vm.event)">Save
-                </button>
+        <div ng-if="vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7 col-md-7"">
+            <div ng-show="globals.currentUser._id === vm.event.metadata.user._id">
+                <div text-angular ng-model="vm.event.content"></div>
+                <br>
+                <div class="btn-group pull-right" ng-show="state.is('main.event.profile')">
+                    <button class="btn btn-default" ng-click="vm.contentEditor = false">Cancel</button>
+                    <button class="btn btn-primary" ng-click="vm.updateEvent(vm.event); vm.contentEditor = false">Save
+                    </button>
+                </div>
+                <div class="btn-group pull-right" ng-show="state.is('main.event.add')">
+                    <button class="btn btn-default" ui-sref="main.event">Cancel</button>
+                    <button class="btn btn-primary" ng-click="vm.createEvent(vm.event)">Save
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="col-xs-offset-3 col-xs-6 col-sm-1">
+        <div class="col-xs-offset-3 col-xs-6 col-sm-1 col-md-offset-0 col-md-1">
             <div class="event-user-profile text-center">
                 <a ui-sref="main.user.profile({slug: vm.event.metadata.user.slug})">
                     <img ng-src="{{vm.event.metadata.user.metadata.image.url}}"

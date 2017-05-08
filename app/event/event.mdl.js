@@ -2,7 +2,7 @@
     'use strict';
     
     angular
-        .module('event', [
+        .module('event', [ 
             'event.profile',
             'event.feed',
             'event.add'

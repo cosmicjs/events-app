@@ -35,7 +35,7 @@
 
                 vm.avatar = response.data.object.metadata.image.url;
 
-                $timeout(getEvents(vm.user.metadata.username), 200);
+                getEvents(vm.user.metadata.username);
 
             }
 
@@ -49,8 +49,8 @@
                     .then(success, failed);
             else
                 UserService
-                .getUser($stateParams.slug)
-                .then(success, failed);
+                    .getUser($stateParams.slug)
+                    .then(success, failed);
         }
         
         function updateUser(user) {
@@ -88,7 +88,7 @@
             console.log(username);
 
             EventService
-                .getEventsByUsername(username)
+                .getEventsByUsername(username, true)
                 .then(success, failed);
         }
 

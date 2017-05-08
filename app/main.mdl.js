@@ -14,15 +14,17 @@
             'ngFlash',
             'textAngular',
             'flow',
-            
+            'angular-loading-bar',
+
             'event',
             'user'
         ])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', 'flowFactoryProvider', 'WRITE_KEY'];
-    function config($stateProvider, $urlRouterProvider, flowFactoryProvider, WRITE_KEY) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'WRITE_KEY'];
+    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, WRITE_KEY) {
+        cfpLoadingBarProvider.includeSpinner = false;
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -88,7 +90,22 @@
             crAcl.setRole();
         }
 
+
+        $rootScope
+            .$on('$stateChangeStart',
+                function(event, toState, toParams, fromState, fromParams){
+                    $("#ui-view").html("");
+                    $(".page-loading").removeClass("hidden");
+                });
+
+        $rootScope
+            .$on('$stateChangeSuccess',
+                function(event, toState, toParams, fromState, fromParams){
+                    $(".page-loading").addClass("hidden");
+                });
+
+
     }
-    
+
 })();
  

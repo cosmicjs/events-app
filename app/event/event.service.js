@@ -19,15 +19,18 @@
                     }
                 });
             };
-            this.getEventsByUsername = function (username) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/events/search', {
-                    params: {
-                        metafield_key: 'user',
-                        metafield_object_slug: username,
-                        limit: 10,
-                        read_key: READ_KEY
+            this.getEventsByUsername = function (username, ignoreLoadingBar) {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/events/search',
+                    {
+                        ignoreLoadingBar: ignoreLoadingBar,
+                        params: {
+                            metafield_key: 'user',
+                            metafield_object_slug: username,
+                            limit: 10,
+                            read_key: READ_KEY
+                        }
                     }
-                });
+                );
             };
             this.getEventById = function (slug) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {

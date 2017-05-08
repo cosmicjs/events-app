@@ -5,7 +5,7 @@
         .module('main')
         .controller('EventFeedCtrl', EventFeedCtrl);
 
-    function EventFeedCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventFeedCtrl($rootScope, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -15,7 +15,6 @@
         function getEvents() {
             function success(response) {
                 $log.info(response);
-
                 vm.events = response.data.objects;
             }
 

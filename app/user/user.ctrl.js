@@ -30,5 +30,18 @@
 
         $scope.state = $state;
 
+        // $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        //     // if (toState.resolve) {
+        //         console.log(false);
+        //     // }
+        // });
+        // $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+        //     // if (toState.resolve) {
+        //         // $scope.hideSpinner();
+        //         console.log(true);
+        //
+        //     // }
+        // });
+
     }
 })();
