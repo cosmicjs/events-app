@@ -46,8 +46,12 @@
             };
             this.removeEvent = function (slug) {
                 return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
+                    ignoreLoadingBar: true,
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
                     data: {
-                        "write_key": WRITE_KEY
+                        write_key: WRITE_KEY
                     }
                 });
             };

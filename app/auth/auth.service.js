@@ -23,6 +23,7 @@
             };
             authService.checkPassword = function (credentials) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
+                    ignoreLoadingBar: true,
                     params: {
                         metafield_key: 'password',
                         metafield_value: credentials.password,

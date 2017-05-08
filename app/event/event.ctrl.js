@@ -5,7 +5,7 @@
         .module('main')
         .controller('EventCtrl', EventCtrl);
 
-    function EventCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventCtrl(EventService, Notification, $log, $rootScope, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -32,6 +32,8 @@
         function removeEvent(slug) {
             function success(response) {
                 $log.info(response);
+
+                getEvents($rootScope.globals.currentUser.metadata.username);
 
                 Notification.success('Deleted');
             }

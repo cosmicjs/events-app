@@ -110,6 +110,22 @@
 })();
  
 (function () {
+    'use strict';
+
+    var app = angular
+                .module('main');
+
+    app.constant('BUCKET_SLUG', 'events');
+    app.constant('URL', 'https://api.cosmicjs.com/v1/');
+    app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
+    app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
+    app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
+
+})();
+
+
+(function () {
     'use strict'; 
 
     angular
@@ -220,6 +236,7 @@
             };
             authService.checkPassword = function (credentials) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
+                    ignoreLoadingBar: true,
                     params: {
                         metafield_key: 'password',
                         metafield_value: credentials.password,
@@ -301,29 +318,13 @@
         });  
 })();  
 (function () {
-    'use strict';
-
-    var app = angular
-                .module('main');
-
-    app.constant('BUCKET_SLUG', 'events');
-    app.constant('URL', 'https://api.cosmicjs.com/v1/');
-    app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
-    app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
-    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
-
-})();
-
-
-(function () {
     'use strict'; 
 
     angular
         .module('main')
         .controller('EventCtrl', EventCtrl);
 
-    function EventCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventCtrl(EventService, Notification, $log, $rootScope, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -350,6 +351,8 @@
         function removeEvent(slug) {
             function success(response) {
                 $log.info(response);
+
+                getEvents($rootScope.globals.currentUser.metadata.username);
 
                 Notification.success('Deleted');
             }
@@ -446,8 +449,12 @@
             };
             this.removeEvent = function (slug) {
                 return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
+                    ignoreLoadingBar: true,
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
                     data: {
-                        "write_key": WRITE_KEY
+                        write_key: WRITE_KEY
                     }
                 });
             };
