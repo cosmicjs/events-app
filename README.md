@@ -1,10 +1,30 @@
-# Angular JS Wedding Site
-##### [View a demo here](http://wedding-site.cosmicapp.co/)
+# Angular JS Events App
+##### [View a demo here](http://events.cosmicapp.co/)
 [Sign up for Cosmic JS](https://cosmicjs.com/) to start managing content for your websites and applications faster and easier.
 #### Get Started
-Run the following commands to build `bundle.js` file and then run the server pointed to your Cosmic JS bucket:
+
+Config App for your Bucket:
+
+```
+app.constant('BUCKET_SLUG', 'your-bucket-slug');
+app.constant('URL', 'https://api.cosmicjs.com/v1/');
+app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/your-bucket-slug/media');
+app.constant('READ_KEY', 'read-key');
+app.constant('WRITE_KEY', 'write-key');
+app.constant('DEFAULT_EVENT_IMAGE', 'url-image');
+```
+
+
+Running server:
 ```
 npm install
-COSMIC_BUCKET=your-bucket-slug npm start
+npm start
+```
+
+Building Events App:
+```
+gulp
 ```
 Then go to [http://localhost:3000](http://localhost:3000)
+
+
