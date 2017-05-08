@@ -1,12 +1,12 @@
 # Angular JS Events App
 ##### [View a demo here](http://events.cosmicapp.co/)
 [Sign up for Cosmic JS](https://cosmicjs.com/) to start managing content for your websites and applications faster and easier.
-#### Get Started
+### Get Started
 
-After setting up your bucket on Cosmic JS, edit the config.js file and edit the slug to point to the slug of your bucket:
+#### After setting up your bucket on Cosmic JS, edit the config.js file and edit the slug to point to the slug of your bucket:
 
 
-```
+```javascript
 // config.js
 app.constant('BUCKET_SLUG', 'your-bucket-slug');
 app.constant('URL', 'https://api.cosmicjs.com/v1/');
@@ -17,14 +17,14 @@ app.constant('DEFAULT_EVENT_IMAGE', 'url-image');
 ```
 
 
-Running server:
+#### Running server:
 ```
 npm install
 npm start
 ```
 
 
-Building Events App:
+#### Building Events App:
 ```
 gulp
 ```
