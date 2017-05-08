@@ -3,9 +3,11 @@
 [Sign up for Cosmic JS](https://cosmicjs.com/) to start managing content for your websites and applications faster and easier.
 #### Get Started
 
-Config App for your Bucket:
+After setting up your bucket on Cosmic JS, edit the config.js file and edit the slug to point to the slug of your bucket:
+
 
 ```
+// config.js
 app.constant('BUCKET_SLUG', 'your-bucket-slug');
 app.constant('URL', 'https://api.cosmicjs.com/v1/');
 app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/your-bucket-slug/media');
@@ -20,6 +22,7 @@ Running server:
 npm install
 npm start
 ```
+
 
 Building Events App:
 ```
