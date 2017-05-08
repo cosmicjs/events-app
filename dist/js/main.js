@@ -53,6 +53,13 @@
                     is_granted: ['ROLE_USER']
                 }
             })
+            .state('blog', {
+                url: '/blog',
+                templateUrl: '../blog.html',
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            })
             .state('auth', {
                 url: '/login',
                 templateUrl: '../views/auth/login.html',
@@ -89,42 +96,11 @@
         else {
             crAcl.setRole();
         }
-
-
-        $rootScope
-            .$on('$stateChangeStart',
-                function(event, toState, toParams, fromState, fromParams){
-                    $("#ui-view").html("");
-                    $(".page-loading").removeClass("hidden");
-                });
-
-        $rootScope
-            .$on('$stateChangeSuccess',
-                function(event, toState, toParams, fromState, fromParams){
-                    $(".page-loading").addClass("hidden");
-                });
-
-
+        
     }
 
 })();
  
-(function () {
-    'use strict';
-
-    var app = angular
-                .module('main');
-
-    app.constant('BUCKET_SLUG', 'events');
-    app.constant('URL', 'https://api.cosmicjs.com/v1/');
-    app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
-    app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
-    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
-
-})();
-
-
 (function () {
     'use strict'; 
 
@@ -317,6 +293,22 @@
             };
         });  
 })();  
+(function () {
+    'use strict';
+
+    var app = angular
+                .module('main');
+
+    app.constant('BUCKET_SLUG', 'events');
+    app.constant('URL', 'https://api.cosmicjs.com/v1/');
+    app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
+    app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
+    app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
+
+})();
+
+
 (function () {
     'use strict'; 
 
@@ -565,7 +557,6 @@
                 }
             });
     }
-    
 })();
  
 (function () {
@@ -602,86 +593,6 @@
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', user, {
                     ignoreLoadingBar: false
                 });
-            };
-            this.checkPassword = function (credentials) {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
-                    params: {
-                        metafield_key: 'password',
-                        metafield_value: credentials.password,
-                        limit: 1,
-                        read_key: READ_KEY
-                    }
-                });
-            };
-            this.register = function (user) {
-
-                return $http.post(URL + BUCKET_SLUG + '/add-object', {
-                    title: user.full_name,
-                    type_slug: 'users',
-                    slug: user.username,
-                    metafields: [
-                        {
-                            key: "username",
-                            type: "text",
-                            value: user.username
-                        },
-                        {
-                            key: "email",
-                            type: "text",
-                            value: user.email
-                        },
-                        {
-                            key: "full_name",
-                            type: "text",
-                            value: user.full_name 
-                        },
-                        {
-                            key: "password",
-                            type: "text",
-                            value: user.password
-                        },
-                        {
-                            key: "image",
-                            type: "file",
-                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
-                        },
-                        {
-                            key: "role",
-                            type: "radio-buttons",
-                            options: [
-                                {
-                                    value: "ROLE_USER"
-                                },
-                                {
-                                    value: "ROLE_SUPER_ADMIN"
-                                }
-                            ],
-                            value: "ROLE_USER"
-                        }
-                    ],
-
-                    write_key: WRITE_KEY
-                });
-            };
-            this.setCredentials = function (user) {
-                $rootScope.globals = {
-                    currentUser: user
-                };
-                
-                $cookieStore.put('globals', $rootScope.globals);
-            };
-            this.clearCredentials = function () {
-                var deferred = $q.defer();
-                $cookieStore.remove('globals');
-
-                if (!$cookieStore.get('globals')) {
-                    $rootScope.globals = {};
-                    deferred.resolve('Credentials clear success');
-                } else {
-                    deferred.reject('Can\'t clear credentials');
-                }
-
-                return deferred.promise;
             };
 
         });  
