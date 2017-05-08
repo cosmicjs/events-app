@@ -68,8 +68,8 @@
         <br>
         <div ng-if="!vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7 col-md-7" ng-bind-html="vm.event.content"
              ng-click="vm.contentEditor = !vm.contentEditor && globals.currentUser._id === vm.event.metadata.user._id"></div>
-        <div ng-if="vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7 col-md-7"">
-            <div ng-show="globals.currentUser._id === vm.event.metadata.user._id">
+        <div ng-if="vm.contentEditor" class="col-xs-12 col-sm-offset-2 col-sm-7 col-md-7">
+            <div ng-show="globals.currentUser._id === vm.event.metadata.user._id || state.is('main.event.add')">
                 <div text-angular ng-model="vm.event.content"></div>
                 <br>
                 <div class="btn-group pull-right" ng-show="state.is('main.event.profile')">
