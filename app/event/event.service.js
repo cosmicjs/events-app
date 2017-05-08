@@ -7,7 +7,7 @@
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 
-                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL_EVENTS) {
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL) {
             
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -93,7 +93,7 @@
                     }
                 };
 
-                xhttp.open("post", MEDIA_URL_EVENTS, true);
+                xhttp.open("post", MEDIA_URL, true);
 
                 xhttp.send(fd);
                 

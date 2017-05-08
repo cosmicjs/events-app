@@ -5,7 +5,7 @@
         .module('main')
         .controller('EventCtrl', EventCtrl);
 
-    function EventCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -41,8 +41,6 @@
                 
                 $log.error(response);
             }
-
-
 
             EventService
                 .removeEvent(slug)

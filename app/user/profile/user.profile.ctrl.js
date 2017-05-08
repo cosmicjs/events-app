@@ -5,7 +5,7 @@
         .module('main')
         .controller('UserProfileCtrl', UserProfileCtrl);
 
-    function UserProfileCtrl(UserService, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $state, $timeout, DEFAULT_EVENT_IMAGE) {
+    function UserProfileCtrl(UserService, $stateParams, EventService, Notification, $log, MEDIA_URL, $state, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getUser = getUser;

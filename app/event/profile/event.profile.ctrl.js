@@ -5,7 +5,7 @@
         .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
-    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
+    function EventProfileCtrl($stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvent = getEvent;

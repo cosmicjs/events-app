@@ -309,8 +309,6 @@
     app.constant('BUCKET_SLUG', 'events');
     app.constant('URL', 'https://api.cosmicjs.com/v1/');
     app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    app.constant('MEDIA_URL_USERS', 'https://api.cosmicjs.com/v1/events/media?folder=users');
-    app.constant('MEDIA_URL_EVENTS', 'https://api.cosmicjs.com/v1/events/media?folder=events');
     app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
     app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
     app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
@@ -325,7 +323,7 @@
         .module('main')
         .controller('EventCtrl', EventCtrl);
 
-    function EventCtrl(crAcl, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -361,8 +359,6 @@
                 
                 $log.error(response);
             }
-
-
 
             EventService
                 .removeEvent(slug)
@@ -411,7 +407,7 @@
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 
-                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL_EVENTS) {
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL) {
             
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -497,7 +493,7 @@
                     }
                 };
 
-                xhttp.open("post", MEDIA_URL_EVENTS, true);
+                xhttp.open("post", MEDIA_URL, true);
 
                 xhttp.send(fd);
                 
@@ -536,19 +532,6 @@
         }
 
         $scope.state = $state;
-
-        // $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-        //     // if (toState.resolve) {
-        //         console.log(false);
-        //     // }
-        // });
-        // $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-        //     // if (toState.resolve) {
-        //         // $scope.hideSpinner();
-        //         console.log(true);
-        //
-        //     // }
-        // });
 
     }
 })();
@@ -609,7 +592,9 @@
             this.updateUser = function (user) {
                 user.write_key = WRITE_KEY;
 
-                return $http.put(URL + BUCKET_SLUG + '/edit-object', user);
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', user, {
+                    ignoreLoadingBar: false
+                });
             };
             this.checkPassword = function (credentials) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
@@ -884,7 +869,7 @@
         .module('main')
         .controller('EventFeedCtrl', EventFeedCtrl);
 
-    function EventFeedCtrl($rootScope, $state, EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+    function EventFeedCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvents = getEvents;
@@ -962,7 +947,7 @@
         .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
-    function EventProfileCtrl($http, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
+    function EventProfileCtrl($stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getEvent = getEvent;
@@ -1115,7 +1100,7 @@
         .module('main')
         .controller('UserProfileCtrl', UserProfileCtrl);
 
-    function UserProfileCtrl(UserService, $stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $state, $timeout, DEFAULT_EVENT_IMAGE) {
+    function UserProfileCtrl(UserService, $stateParams, EventService, Notification, $log, MEDIA_URL, $state, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getUser = getUser;
@@ -1276,7 +1261,7 @@
         .module('main')
         .controller('UserSettingsCtrl', UserSettingsCtrl);
 
-    function UserSettingsCtrl(UserService, $rootScope, EventService, Notification, $log, $scope, MEDIA_URL, $state, $timeout, DEFAULT_EVENT_IMAGE) {
+    function UserSettingsCtrl(UserService, EventService, Notification, $log, MEDIA_URL, DEFAULT_EVENT_IMAGE) {
         var vm = this;
 
         vm.getUser = getUser;

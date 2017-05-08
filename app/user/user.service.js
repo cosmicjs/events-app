@@ -29,7 +29,9 @@
             this.updateUser = function (user) {
                 user.write_key = WRITE_KEY;
 
-                return $http.put(URL + BUCKET_SLUG + '/edit-object', user);
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', user, {
+                    ignoreLoadingBar: false
+                });
             };
             this.checkPassword = function (credentials) {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/users/search', {
