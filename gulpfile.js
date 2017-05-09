@@ -6,7 +6,9 @@ var gulp = require('gulp'),
     concatCss = require('gulp-concat-css'),
     concat = require('gulp-concat'),
     wiredep = require('wiredep').stream,
-    autoprefixer = require('gulp-autoprefixer');
+    gulpNgConfig = require('gulp-ng-config'),
+    autoprefixer = require('gulp-autoprefixer'),
+    remoteSrc = require('gulp-remote-src');
 
 gulp.task('css', function () {
   return gulp.src('css/**/*.css')
@@ -16,10 +18,18 @@ gulp.task('css', function () {
     .pipe(gulp.dest('dist/css'));
 });
  
-gulp.task('js', function() {
+gulp.task('js', ['config'], function() {
   return gulp.src('app/**/**/*.js')
     .pipe(concat('main.js'))
     .pipe(gulp.dest('dist/js/'));
+});
+
+gulp.task('config', function () {
+      remoteSrc(['config'], {
+        base: 'http://localhost:3000/'
+      })
+      .pipe(gulpNgConfig('config'))
+      .pipe(gulp.dest('app/config'));
 });
 
 gulp.task('default', function () {

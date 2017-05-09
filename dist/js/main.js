@@ -17,14 +17,20 @@
             'angular-loading-bar',
 
             'event',
-            'user'
+            'user',
+            
+            'config'
         ])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'WRITE_KEY'];
-    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, WRITE_KEY) {
+    var app = angular
+        .module('main');
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'BUCKET_SLUG'];
+    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, BUCKET_SLUG) {
         cfpLoadingBarProvider.includeSpinner = false;
+        
 
         $urlRouterProvider.otherwise(function ($injector) {
             var $state = $injector.get("$state");
@@ -73,8 +79,23 @@
             });
     } 
 
-    run.$inject = ['$rootScope', '$cookieStore', '$http', 'crAcl', 'AuthService'];
-    function run($rootScope, $cookieStore, $http, crAcl, AuthService) {
+    run.$inject = ['$rootScope', '$cookieStore', '$http', 'crAcl'];
+
+    function run($rootScope, $cookieStore, $http, crAcl) {
+        // function saveConfig(response) {
+        //     app.constant('BUCKET_SLUG', response.data.BUCKET_SLUG || 'events');
+        //     app.constant('URL', 'https://api.cosmicjs.com/v1/');
+        //     app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
+        //     app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
+        //     app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+        //     app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
+        // }
+        //
+        // function error() {
+        //     Notification.error('Config variables not found!');
+        // }
+        //
+        // $http.get('/config').then(saveConfig, error);        
 
         $rootScope.globals = $cookieStore.get('globals') || {};
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -293,6 +314,9 @@
             };
         });  
 })();  
+angular.module("config", [])
+.constant("WRITE_KEY", "GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld");
+
 (function () {
     'use strict';
 
@@ -303,7 +327,7 @@
     app.constant('URL', 'https://api.cosmicjs.com/v1/');
     app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
     app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
-    app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    // app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
     app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
 
 })();
