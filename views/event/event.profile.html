@@ -40,8 +40,8 @@
                             <span class="badge bg-blue pull-right" ng-click="vm.dateEndPicker = !vm.dateEndPicker">End <span ng-show="vm.event.metafields[2].value">|</span> {{vm.event.metafields[2].value | date}} <i
                                     class="fa fa-pencil"></i></span>
                         </div>
-                        <div class="event-change-image" ng-show="globals.currentUser._id === vm.event.metadata.user._id">
-                            <span ng-if="!vm.flow.files[0] || state.is('main.event.add')" class="title" flow-btn>Change image <i class="fa fa-pencil"></i></span>
+                        <div class="event-change-image" ng-show="globals.currentUser._id === vm.event.metadata.user._id  || state.is('main.event.add')">
+                            <span ng-if="!vm.flow.files[0]" class="title" flow-btn>Change image <i class="fa fa-pencil"></i></span>
                             <div class="btn-group" ng-if="vm.flow.files[0]" ng-show="state.is('main.event.profile')">
                                 <button class="btn btn-success btn-sm"
                                         ng-click="vm.upload()">Upload image <i class="fa fa-download"></i></button>
