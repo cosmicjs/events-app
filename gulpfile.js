@@ -8,7 +8,9 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     gulpNgConfig = require('gulp-ng-config'),
     autoprefixer = require('gulp-autoprefixer'),
-    remoteSrc = require('gulp-remote-src');
+    remoteSrc = require('gulp-remote-src'),
+    gulp = require('gulp'),
+    b2v = require('buffer-to-vinyl');
 
 gulp.task('css', function () {
   return gulp.src('css/**/*.css')
@@ -25,11 +27,14 @@ gulp.task('js', ['config'], function() {
 });
 
 gulp.task('config', function () {
-      remoteSrc(['config'], {
-        base: 'http://localhost:3000/'
-      })
-      .pipe(gulpNgConfig('config'))
-      .pipe(gulp.dest('app/config'));
+    const json = JSON.stringify({
+      COSMIC_BUCKET: process.env.COSMIC_BUCKET,
+      COSMIC_READ_KEY: process.env.COSMIC_READ_KEY,
+      COSMIC_WRITE_KEY: process.env.COSMIC_WRITE_KEY
+    });
+    return b2v.stream(new Buffer(json), 'config.js')
+    .pipe(gulpNgConfig('config'))
+    .pipe(gulp.dest('app/config'));
 });
 
 gulp.task('default', function () {

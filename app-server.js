@@ -12,10 +12,6 @@ var http = require('http').Server(app)
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 })
-app.get('/config', (req, res) => {
-  
-  res.send(config);
-})
 http.listen(app.get('port'), () => {
   console.log('Events App listening on ' + app.get('port'))
 })

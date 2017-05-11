@@ -1,0 +1,20 @@
+{
+  "name": "infinity-angular-chosen",
+  "version": "0.2.0",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "chosen": "^1.6.2"
+  },
+  "appPath": "app",
+  "moduleName": "infinity.angular-chosen",
+  "homepage": "https://github.com/infinity-square/angular-chosen",
+  "_release": "0.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.0",
+    "commit": "e51ce23f211cff4171d68123ee88b498bde3237d"
+  },
+  "_source": "https://github.com/infinity-square/angular-chosen.git",
+  "_target": "^0.2.0",
+  "_originalSource": "infinity-angular-chosen"
+}

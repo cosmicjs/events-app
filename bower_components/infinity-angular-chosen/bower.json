@@ -1,0 +1,10 @@
+{
+  "name": "infinity-angular-chosen",
+  "version": "0.2.0",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "chosen": "^1.6.2"
+  },
+  "appPath": "app",
+  "moduleName": "infinity.angular-chosen"
+}
