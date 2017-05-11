@@ -23,7 +23,7 @@
     "wiredep": "^3.0.0"
   },
   "scripts": {
-    "postinstall": "bower install; gulp config",
+    "postinstall": "bower install && gulp config && gulp js",
     "start": "npm run production",
     "production": "node app-server.js"
   },
