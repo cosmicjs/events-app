@@ -27,9 +27,9 @@ gulp.task('js', ['config'], function() {
 
 gulp.task('config', function () {
   const json = JSON.stringify({
-    COSMIC_BUCKET: process.env.COSMIC_BUCKET,
-    COSMIC_READ_KEY: process.env.COSMIC_READ_KEY,
-    COSMIC_WRITE_KEY: process.env.COSMIC_WRITE_KEY
+    BUCKET: process.env.COSMIC_BUCKET,
+    READ_KEY: process.env.COSMIC_READ_KEY,
+    WRITE_KEY: process.env.COSMIC_WRITE_KEY
   });
   return b2v.stream(new Buffer(json), 'config.js')
   .pipe(gulpNgConfig('config'))
