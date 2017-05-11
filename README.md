@@ -2,8 +2,7 @@
 ##### [View a demo here](http://events.cosmicapp.co/)
 [Sign up for Cosmic JS](https://cosmicjs.com/) to start managing content for your websites and applications faster and easier.
 ### Get Started
-
-#### After setting up your bucket on Cosmic JS, edit the config.js file and edit the slug to point to the slug of your bucket:
+After setting up your bucket on Cosmic JS, edit the config.js file and edit the slug to point to the slug of your bucket:
 
 
 ```javascript
