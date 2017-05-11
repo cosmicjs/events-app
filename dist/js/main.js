@@ -314,28 +314,6 @@
             };
         });  
 })();  
-angular.module("config", [])
-.constant("BUCKET_SLUG", "events-app")
-.constant("MEDIA_URL", "https://api.cosmicjs.com/v1/events-app/media")
-.constant("READ_KEY", "")
-.constant("WRITE_KEY", "");
-
-(function () {
-    'use strict';
-
-    var app = angular
-                .module('main');
-
-    // app.constant('BUCKET_SLUG', 'events');
-    app.constant('URL', 'https://api.cosmicjs.com/v1/');
-    // app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    // app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
-    // app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
-    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
-
-})();
-
-
 (function () {
     'use strict'; 
 
@@ -477,6 +455,14 @@ angular.module("config", [])
                     }
                 });
             };
+            this.slugify = function (text) {
+              return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+            };
             this.createEvent = function (event) {
                 event.write_key = WRITE_KEY;
 
@@ -486,7 +472,7 @@ angular.module("config", [])
                 event.metafields[1].value = beginDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + beginDate.getDate();
                 event.metafields[2].value = endDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + endDate.getDate();
 
-                event.slug = event.title;
+                event.slug = this.slugify(event.title);
                 event.type_slug = 'events';
 
                 event.metafields[4] = {
@@ -495,6 +481,7 @@ angular.module("config", [])
                     object_type: "users",
                     value: $rootScope.globals.currentUser._id
                 };
+                console.log(event);
                 return $http.post(URL + BUCKET_SLUG + '/add-object', event);
             };
             this.upload = function (file) {
@@ -527,6 +514,28 @@ angular.module("config", [])
             }
         });
 })();  
+angular.module("config", [])
+.constant("BUCKET_SLUG", "events-app")
+.constant("MEDIA_URL", "https://api.cosmicjs.com/v1/events-app/media")
+.constant("READ_KEY", "")
+.constant("WRITE_KEY", "");
+
+(function () {
+    'use strict';
+
+    var app = angular
+                .module('main');
+
+    // app.constant('BUCKET_SLUG', 'events');
+    app.constant('URL', 'https://api.cosmicjs.com/v1/');
+    // app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
+    // app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
+    // app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
+
+})();
+
+
 (function () {
     'use strict'; 
 
@@ -812,84 +821,6 @@ angular.module("config", [])
 
     angular
         .module('main')
-        .controller('EventFeedCtrl', EventFeedCtrl);
-
-    function EventFeedCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
-        var vm = this;
-
-        vm.getEvents = getEvents;
-        vm.removeEvent = removeEvent;
-        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
-
-        function getEvents() {
-            function success(response) {
-                $log.info(response);
-                vm.events = response.data.objects;
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            EventService
-                .getEvents()
-                .then(success, failed);
-        }
-
-        function removeEvent(slug) {
-            function success(response) {
-                $log.info(response);
-
-                Notification.success('Deleted');
-            }
-
-            function failed(response) {
-                Notification.error(response.data.message);
-                
-                $log.error(response);
-            }
-
-
-
-            EventService
-                .removeEvent(slug)
-                .then(success, failed);
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('event.feed', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('main.event.feed', {
-                url: '/feed',
-                views: {
-                    '@main': {
-                        templateUrl: '../views/event/event.feed.html',
-                        controller: 'EventFeedCtrl as vm'
-                    }
-                },
-                data: {
-                    is_granted: ['ROLE_USER']
-                }
-            });
-    }
-    
-})();
- 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
     function EventProfileCtrl($stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
@@ -1028,6 +959,84 @@ angular.module("config", [])
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',
                         controller: 'EventProfileCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('EventFeedCtrl', EventFeedCtrl);
+
+    function EventFeedCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+        var vm = this;
+
+        vm.getEvents = getEvents;
+        vm.removeEvent = removeEvent;
+        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
+
+        function getEvents() {
+            function success(response) {
+                $log.info(response);
+                vm.events = response.data.objects;
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            EventService
+                .getEvents()
+                .then(success, failed);
+        }
+
+        function removeEvent(slug) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.success('Deleted');
+            }
+
+            function failed(response) {
+                Notification.error(response.data.message);
+                
+                $log.error(response);
+            }
+
+
+
+            EventService
+                .removeEvent(slug)
+                .then(success, failed);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('event.feed', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.event.feed', {
+                url: '/feed',
+                views: {
+                    '@main': {
+                        templateUrl: '../views/event/event.feed.html',
+                        controller: 'EventFeedCtrl as vm'
                     }
                 },
                 data: {

@@ -55,6 +55,14 @@
                     }
                 });
             };
+            this.slugify = function (text) {
+              return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+            };
             this.createEvent = function (event) {
                 event.write_key = WRITE_KEY;
 
@@ -64,7 +72,7 @@
                 event.metafields[1].value = beginDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + beginDate.getDate();
                 event.metafields[2].value = endDate.getFullYear() + '-' + (beginDate.getMonth() + 1) + '-' + endDate.getDate();
 
-                event.slug = event.title;
+                event.slug = this.slugify(event.title);
                 event.type_slug = 'events';
 
                 event.metafields[4] = {
@@ -73,6 +81,7 @@
                     object_type: "users",
                     value: $rootScope.globals.currentUser._id
                 };
+                console.log(event);
                 return $http.post(URL + BUCKET_SLUG + '/add-object', event);
             };
             this.upload = function (file) {
