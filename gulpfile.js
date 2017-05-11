@@ -28,6 +28,7 @@ gulp.task('js', ['config'], function() {
 gulp.task('config', function () {
   const json = JSON.stringify({
     BUCKET_SLUG: process.env.COSMIC_BUCKET,
+    MEDIA_URL: 'https://api.cosmicjs.com/v1/' + process.env.COSMIC_BUCKET + '/media',
     READ_KEY: process.env.COSMIC_READ_KEY || '',
     WRITE_KEY: process.env.COSMIC_WRITE_KEY || ''
   });
