@@ -28,8 +28,5 @@
     "production": "node app-server.js"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "gulp-remote-src": "^0.4.2"
-  }
+  "license": "ISC"
 }

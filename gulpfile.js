@@ -8,7 +8,6 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     gulpNgConfig = require('gulp-ng-config'),
     autoprefixer = require('gulp-autoprefixer'),
-    remoteSrc = require('gulp-remote-src'),
     gulp = require('gulp'),
     b2v = require('buffer-to-vinyl');
 
