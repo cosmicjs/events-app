@@ -62,7 +62,7 @@
                         {
                             key: "image",
                             type: "file",
-                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
+                            value: "89295c10-3667-11e7-9161-61cd2f0acd2a-nopic_192.gif"
                         },
                         {
                             key: "role",

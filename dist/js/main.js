@@ -272,7 +272,7 @@
                         {
                             key: "image",
                             type: "file",
-                            value: "3b2180f0-2c40-11e7-85ac-e98751218524-1493421969_male.png"
+                            value: "89295c10-3667-11e7-9161-61cd2f0acd2a-nopic_192.gif"
                         },
                         {
                             key: "role",
@@ -314,6 +314,28 @@
             };
         });  
 })();  
+angular.module("config", [])
+.constant("BUCKET_SLUG", "events-app")
+.constant("MEDIA_URL", "https://api.cosmicjs.com/v1/events-app/media")
+.constant("READ_KEY", "")
+.constant("WRITE_KEY", "");
+
+(function () {
+    'use strict';
+
+    var app = angular
+                .module('main');
+
+    // app.constant('BUCKET_SLUG', 'events');
+    app.constant('URL', 'https://api.cosmicjs.com/v1/');
+    // app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
+    // app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
+    // app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
+    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
+
+})();
+
+
 (function () {
     'use strict'; 
 
@@ -514,28 +536,6 @@
             }
         });
 })();  
-angular.module("config", [])
-.constant("BUCKET_SLUG", "events-app")
-.constant("MEDIA_URL", "https://api.cosmicjs.com/v1/events-app/media")
-.constant("READ_KEY", "")
-.constant("WRITE_KEY", "");
-
-(function () {
-    'use strict';
-
-    var app = angular
-                .module('main');
-
-    // app.constant('BUCKET_SLUG', 'events');
-    app.constant('URL', 'https://api.cosmicjs.com/v1/');
-    // app.constant('MEDIA_URL', 'https://api.cosmicjs.com/v1/events/media');
-    // app.constant('READ_KEY', 'NSAzCEjy62aPHj4tpUNrzeBY3IBfFDHPK67A9eqIOGsZqgztnf');
-    // app.constant('WRITE_KEY', 'GXQFFuUibgOtKB29ywtKwwXdpFK29fBZrBnO3YjtfTcV6qkpld');
-    app.constant('DEFAULT_EVENT_IMAGE', 'https://cosmicjs.com/uploads/ce6ed110-31da-11e7-aef2-87741016d54e-no_image.png');
-
-})();
-
-
 (function () {
     'use strict'; 
 
@@ -821,6 +821,84 @@ angular.module("config", [])
 
     angular
         .module('main')
+        .controller('EventFeedCtrl', EventFeedCtrl);
+
+    function EventFeedCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
+        var vm = this;
+
+        vm.getEvents = getEvents;
+        vm.removeEvent = removeEvent;
+        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
+
+        function getEvents() {
+            function success(response) {
+                $log.info(response);
+                vm.events = response.data.objects;
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            EventService
+                .getEvents()
+                .then(success, failed);
+        }
+
+        function removeEvent(slug) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.success('Deleted');
+            }
+
+            function failed(response) {
+                Notification.error(response.data.message);
+                
+                $log.error(response);
+            }
+
+
+
+            EventService
+                .removeEvent(slug)
+                .then(success, failed);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('event.feed', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.event.feed', {
+                url: '/feed',
+                views: {
+                    '@main': {
+                        templateUrl: '../views/event/event.feed.html',
+                        controller: 'EventFeedCtrl as vm'
+                    }
+                },
+                data: {
+                    is_granted: ['ROLE_USER']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
         .controller('EventProfileCtrl', EventProfileCtrl);
 
     function EventProfileCtrl($stateParams, EventService, Notification, $log, $scope, MEDIA_URL, $rootScope, DEFAULT_EVENT_IMAGE) {
@@ -959,84 +1037,6 @@ angular.module("config", [])
                     '@main': {
                         templateUrl: '../views/event/event.profile.html',
                         controller: 'EventProfileCtrl as vm'
-                    }
-                },
-                data: {
-                    is_granted: ['ROLE_USER']
-                }
-            });
-    }
-    
-})();
- 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
-        .controller('EventFeedCtrl', EventFeedCtrl);
-
-    function EventFeedCtrl(EventService, Notification, $log, DEFAULT_EVENT_IMAGE) {
-        var vm = this;
-
-        vm.getEvents = getEvents;
-        vm.removeEvent = removeEvent;
-        vm.DEFAULT_EVENT_IMAGE = DEFAULT_EVENT_IMAGE;
-
-        function getEvents() {
-            function success(response) {
-                $log.info(response);
-                vm.events = response.data.objects;
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            EventService
-                .getEvents()
-                .then(success, failed);
-        }
-
-        function removeEvent(slug) {
-            function success(response) {
-                $log.info(response);
-
-                Notification.success('Deleted');
-            }
-
-            function failed(response) {
-                Notification.error(response.data.message);
-                
-                $log.error(response);
-            }
-
-
-
-            EventService
-                .removeEvent(slug)
-                .then(success, failed);
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('event.feed', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('main.event.feed', {
-                url: '/feed',
-                views: {
-                    '@main': {
-                        templateUrl: '../views/event/event.feed.html',
-                        controller: 'EventFeedCtrl as vm'
                     }
                 },
                 data: {
