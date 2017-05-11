@@ -1,5 +1,5 @@
 # Angular JS Events App
-![Angular JS Events App](https://cosmicjs.com/uploads/eafa5f80-3675-11e7-9161-61cd2f0acd2a-angular-js-events-app.jpg)
+![Angular JS Events App](https://cosmicjs.com/uploads/797d5ff0-3676-11e7-9161-61cd2f0acd2a-angular-js-events-app-6.png)
 ##### [View a demo here](http://events.cosmicapp.co/)
 [Sign up for Cosmic JS](https://cosmicjs.com/) to start managing content for your websites and applications faster and easier.
 ### Get Started
