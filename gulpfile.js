@@ -27,14 +27,14 @@ gulp.task('js', ['config'], function() {
 });
 
 gulp.task('config', function () {
-    const json = JSON.stringify({
-      COSMIC_BUCKET: process.env.COSMIC_BUCKET,
-      COSMIC_READ_KEY: process.env.COSMIC_READ_KEY,
-      COSMIC_WRITE_KEY: process.env.COSMIC_WRITE_KEY
-    });
-    return b2v.stream(new Buffer(json), 'config.js')
-    .pipe(gulpNgConfig('config'))
-    .pipe(gulp.dest('app/config'));
+  const json = JSON.stringify({
+    COSMIC_BUCKET: process.env.COSMIC_BUCKET,
+    COSMIC_READ_KEY: process.env.COSMIC_READ_KEY,
+    COSMIC_WRITE_KEY: process.env.COSMIC_WRITE_KEY
+  });
+  return b2v.stream(new Buffer(json), 'config.js')
+  .pipe(gulpNgConfig('config'))
+  .pipe(gulp.dest('app/config'));
 });
 
 gulp.task('default', function () {
